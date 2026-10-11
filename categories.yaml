@@ -1,0 +1,160 @@
+# Each category maps to keywords. A transaction is matched when its
+# description contains any keyword (case-insensitive). First match wins,
+# so put more specific categories above broader ones.
+
+income:
+  - payroll
+  - direct dep
+  - salary
+  - deposit
+  - interest earned
+  - interest payment
+  - tax refund
+
+transfer:
+  - transfer
+  - zelle
+  - venmo
+  - paypal
+  - cashapp
+  - cash app
+
+housing:
+  - rent
+  - mortgage
+  - apartment
+  - property mgmt
+
+utilities:
+  - electric
+  - pg&e
+  - water bill
+  - gas bill
+  - internet
+  - comcast
+  - xfinity
+  - verizon
+  - t-mobile
+  - at&t
+
+insurance:
+  - insurance
+  - geico
+  - progressive
+  - state farm
+
+health:
+  - pharmacy
+  - cvs
+  - walgreens
+  - doctor
+  - dental
+  - clinic
+  - hospital
+
+groceries:
+  - grocery
+  - instacart
+  - whole foods
+  - trader joe
+  - safeway
+  - kroger
+  - costco
+  - aldi
+  - walmart grocery
+
+dining:
+  - restaurant
+  - starbucks
+  - mcdonald
+  - chipotle
+  - doordash
+  - uber eats
+  - ubereats
+  - grubhub
+  - cafe
+  - coffee
+  - pizza
+
+transportation:
+  - uber
+  - ubers
+  - lyft
+  - shell
+  - chevron
+  - exxon
+  - gas station
+  - parking
+  - metro
+  - transit
+  - toll
+
+subscriptions:
+  - netflix
+  - spotify
+  - hulu
+  - disney+
+  - apple.com/bill
+  - icloud
+  - youtube premium
+  - adobe
+  - dropbox
+  - openai
+  - chatgpt
+  - gym
+  - membership
+
+entertainment:
+  - steam
+  - playstation
+  - nintendo
+  - cinema
+  - theater
+  - ticketmaster
+  - concert
+
+travel:
+  - airline
+  - delta
+  - united air
+  - southwest
+  - hotel
+  - airbnb
+  - expedia
+  - booking.com
+
+shopping:
+  - amazon
+  - target
+  - walmart
+  - best buy
+  - ikea
+  - etsy
+  - ebay
+  - home depot
+  - lowes
+  - nike
+
+personal_care:
+  - salon
+  - barber
+  - sephora
+  - ulta
+  - spa
+
+debt:
+  - loan payment
+  - credit crd
+  - e-payment
+  - card payment
+  - autopay
+  - student loan
+  - affirm
+  - klarna
+
+fees:
+  - fee
+  - overdraft
+  - service charge
+  - atm withdrawal fee
+  - late fee
