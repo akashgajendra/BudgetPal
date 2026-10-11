@@ -16,7 +16,7 @@ analyzer, report, svg_charts) are unchanged.
 
 ### Backend modules
 - parser.py — pdfplumber extracts text, regex pulls date/description/amount rows
-- categorizer.py — keyword rules first, Ollama (gemma3:4b) fallback for unmatched
+- categorizer.py — keyword rules first, Ollama (mistral:7b) fallback for unmatched
 - analyzer.py — pandas: summaries, category grouping, top merchants, daily spend
 - svg_charts.py — pure-Python inline SVG chart generators (bar, donut, line)
 - report.py — assembles self-contained HTML report with inline SVG
@@ -31,12 +31,12 @@ Base: warm neutral, not pure white or pure black.
 - Text primary: #1a1a1a
 - Text secondary: #6b7280
 - Border: #e5e5e3
-- Accent: #2563eb (blue — used sparingly for CTAs and active states)
+- Accent: #4f46e5 (indigo — used for CTAs, active states, primary chart color)
 
 Chart palette (must be distinguishable, accessible, print-friendly):
-- #2563eb (blue), #dc2626 (red), #16a34a (green), #f59e0b (amber),
-  #7c3aed (violet), #ec4899 (pink), #0891b2 (cyan), #ea580c (orange),
-  #4b5563 (gray), #84cc16 (lime), #6366f1 (indigo), #14b8a6 (teal)
+- #4f46e5 (indigo), #f97316 (orange), #0ea5e9 (sky), #e11d48 (rose),
+  #eab308 (yellow), #8b5cf6 (violet), #14b8a6 (teal), #f43f5e (pink),
+  #059669 (green), #84cc16 (lime), #d946ef (fuchsia), #0891b2 (cyan)
 
 ### Typography
 System font stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif.
@@ -104,6 +104,46 @@ response parsing, graceful fallback to "other" with a user-visible warning.
 - Line chart with one data point: render as a single dot, no line
 - Long category names: truncate in bar chart labels
 - Many categories: bar chart height scales, donut legend can overflow
+
+### Deposit vs withdrawal detection
+Bank statements like Wells Fargo use separate columns for deposits and withdrawals.
+When pdfplumber extracts text, amounts flatten into one line — no way to tell which
+column they came from.
+
+Approaches tried and rejected:
+- **pdfplumber extract_tables()**: Wells Fargo tables lack visible borders, so
+  pdfplumber's table detector finds nothing.
+- **extract_words() with x-coordinates**: Map each word's x0 position to deposit or
+  withdrawal columns using header positions. Rejected — too fragile, requires per-bank
+  coordinate tuning, not generic across statement formats.
+- **extract_text(layout=True) with character positions**: Preserves column spacing as
+  whitespace. Detect column headers by character position and classify amounts by
+  proximity. Still position-based at heart and overly restrictive — dropped 41 → 7
+  transactions because SKIP_HINTS like "balance" matched the full layout line.
+- **Running balance tracking**: Compare transaction amount against balance changes to
+  infer sign. Rejected — not every line has a balance value filled in.
+
+What works: **description-based detection**. Every bank labels transactions clearly —
+"POS Purchase", "Direct Deposit", "ATM Withdrawal", "Interest Payment". CREDIT_HINTS
+matches deposit descriptions and flips them positive. Everything else defaults to
+negative (withdrawal). The analyzer only counts amount < 0 as spending, so undetected
+deposits that slip through as withdrawals still get filtered correctly for the user's
+primary use case (analyzing spending). Single code path, works across all banks.
+
+### Transaction remove/update bug
+Removing or updating the largest transaction silently failed while other rows worked.
+
+Root cause: the categorizer stored dates as datetime objects. On every /remove and
+/recalculate request, the server re-sorted the rows with sorted(rows, key=date).
+Meanwhile, _build_response sorted via df.sort_values("date") on pandas datetimes.
+When multiple transactions shared the same date, these two sorts could order ties
+differently. The JS sent an index based on the displayed order, but the server's
+re-sort put a different row at that index — so the wrong row got removed/updated,
+or the "removed" row reappeared because it was never actually popped.
+
+Fix: convert dates to strings once at upload time, sort once, and never re-sort.
+The server list order always matches the JS table order. Also switched from Flask
+cookie sessions (4KB size limit that silently drops data) to a simple in-memory dict.
 
 ### Self-contained HTML report
 The report must open in any browser with no network access. This means:
