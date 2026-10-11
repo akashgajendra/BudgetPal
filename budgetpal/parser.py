@@ -65,63 +65,80 @@ def extract_lines(pdf_bytes: bytes) -> list[str]:
     return lines
 
 
-def _clean_cell(cell) -> str:
-    if cell is None:
-        return ""
-    return str(cell).strip()
+AMOUNT_NUM_RE = re.compile(r"^[\d,]+\.\d{2}$")
 
 
-def _parse_amount_raw(raw: str) -> float | None:
-    cleaned = raw.replace("$", "").replace(",", "").strip()
-    if not cleaned:
-        return None
-    cleaned = cleaned.strip("()-").strip()
-    try:
-        return float(cleaned)
-    except ValueError:
-        return None
+DEPOSIT_HINTS = ("deposit", "credits", "credit", "additions", "money in")
+WITHDRAW_HINTS = ("withdrawal", "debits", "debit", "subtractions", "money out", "charges")
 
 
-def _extract_from_tables(pdf_bytes: bytes) -> list[Transaction]:
+def _find_column_regions(page) -> tuple[float, float] | None:
+    words = page.extract_words() or []
+    dep_x = None
+    wd_x = None
+    for w in words:
+        t = w["text"].lower()
+        if dep_x is None and any(h in t for h in DEPOSIT_HINTS):
+            dep_x = float(w["x0"])
+        elif wd_x is None and any(h in t for h in WITHDRAW_HINTS):
+            wd_x = float(w["x0"])
+    if dep_x is not None and wd_x is not None:
+        return dep_x, wd_x
+    return None
+
+
+def _extract_with_positions(pdf_bytes: bytes) -> list[Transaction]:
     transactions = []
     with pdfplumber.open(io.BytesIO(pdf_bytes)) as pdf:
         for page in pdf.pages:
-            tables = page.extract_tables() or []
-            for table in tables:
-                if not table or len(table) < 2:
+            regions = _find_column_regions(page)
+            if regions is None:
+                continue
+            dep_x, wd_x = regions
+            midpoint = (dep_x + wd_x) / 2
+
+            words = page.extract_words() or []
+            rows_by_top: dict[float, list] = {}
+            for w in words:
+                top = round(float(w["top"]), 0)
+                rows_by_top.setdefault(top, []).append(w)
+
+            for top in sorted(rows_by_top):
+                row_words = sorted(rows_by_top[top], key=lambda w: float(w["x0"]))
+                if not row_words:
                     continue
-                header = [_clean_cell(c).lower() for c in table[0]]
-                date_col = desc_col = dep_col = wd_col = -1
-                for i, h in enumerate(header):
-                    if "date" in h:
-                        date_col = i
-                    elif "description" in h:
-                        desc_col = i
-                    elif "deposit" in h or "credit" in h:
-                        dep_col = i
-                    elif "withdrawal" in h or "debit" in h:
-                        wd_col = i
-                if date_col < 0 or desc_col < 0 or (dep_col < 0 and wd_col < 0):
+                first_text = row_words[0]["text"]
+                date = _parse_date(first_text)
+                if date is None:
                     continue
-                for row in table[1:]:
-                    if len(row) <= max(date_col, desc_col):
-                        continue
-                    date_str = _clean_cell(row[date_col])
-                    desc = _clean_cell(row[desc_col])
-                    date = _parse_date(date_str)
-                    if date is None or not desc:
-                        continue
-                    if _is_pii_line(desc) or any(h in desc.lower() for h in SKIP_HINTS):
-                        continue
-                    desc = DESC_NOISE_RE.sub(" ", desc).strip(" -")
-                    if not desc:
-                        continue
-                    dep_val = _parse_amount_raw(_clean_cell(row[dep_col])) if dep_col >= 0 and dep_col < len(row) else None
-                    wd_val = _parse_amount_raw(_clean_cell(row[wd_col])) if wd_col >= 0 and wd_col < len(row) else None
-                    if wd_val is not None:
-                        transactions.append(Transaction(date=date, description=desc, amount=-wd_val))
-                    elif dep_val is not None:
-                        transactions.append(Transaction(date=date, description=desc, amount=dep_val))
+                amounts = []
+                desc_parts = []
+                for w in row_words[1:]:
+                    txt = w["text"]
+                    if AMOUNT_NUM_RE.match(txt.replace(",", "").replace("$", "")):
+                        x = float(w["x0"])
+                        is_deposit = x < midpoint
+                        val = float(txt.replace(",", "").replace("$", ""))
+                        amounts.append((val, is_deposit, x))
+                    elif not AMOUNT_NUM_RE.match(txt.replace(",", "").replace("$", "")):
+                        if float(w["x0"]) < dep_x - 20:
+                            desc_parts.append(txt)
+
+                desc = " ".join(desc_parts).strip()
+                desc = DESC_NOISE_RE.sub(" ", desc).strip(" -")
+                if not desc or any(h in desc.lower() for h in SKIP_HINTS):
+                    continue
+                if _is_pii_line(desc):
+                    continue
+                if not amounts:
+                    continue
+
+                non_balance = [a for a in amounts if a[2] < wd_x + 80]
+                if not non_balance:
+                    continue
+                val, is_deposit, _ = non_balance[0]
+                amount = val if is_deposit else -val
+                transactions.append(Transaction(date=date, description=desc, amount=amount))
     return transactions
 
 
@@ -199,8 +216,11 @@ def parse_statement(pdf_bytes: bytes) -> tuple[list[Transaction], int]:
     lines = extract_lines(pdf_bytes)
     year = _extract_year(lines)
 
-    transactions = _extract_from_tables(pdf_bytes)
-    if not transactions:
+    transactions = _extract_with_positions(pdf_bytes)
+    if transactions:
+        print(f"[parser] extracted {len(transactions)} transactions via column positions")
+    else:
+        print("[parser] column extraction found nothing, falling back to text parsing")
         transactions = parse_lines(lines)
 
     if year:
