@@ -65,6 +65,66 @@ def extract_lines(pdf_bytes: bytes) -> list[str]:
     return lines
 
 
+def _clean_cell(cell) -> str:
+    if cell is None:
+        return ""
+    return str(cell).strip()
+
+
+def _parse_amount_raw(raw: str) -> float | None:
+    cleaned = raw.replace("$", "").replace(",", "").strip()
+    if not cleaned:
+        return None
+    cleaned = cleaned.strip("()-").strip()
+    try:
+        return float(cleaned)
+    except ValueError:
+        return None
+
+
+def _extract_from_tables(pdf_bytes: bytes) -> list[Transaction]:
+    transactions = []
+    with pdfplumber.open(io.BytesIO(pdf_bytes)) as pdf:
+        for page in pdf.pages:
+            tables = page.extract_tables() or []
+            for table in tables:
+                if not table or len(table) < 2:
+                    continue
+                header = [_clean_cell(c).lower() for c in table[0]]
+                date_col = desc_col = dep_col = wd_col = -1
+                for i, h in enumerate(header):
+                    if "date" in h:
+                        date_col = i
+                    elif "description" in h:
+                        desc_col = i
+                    elif "deposit" in h or "credit" in h:
+                        dep_col = i
+                    elif "withdrawal" in h or "debit" in h:
+                        wd_col = i
+                if date_col < 0 or desc_col < 0 or (dep_col < 0 and wd_col < 0):
+                    continue
+                for row in table[1:]:
+                    if len(row) <= max(date_col, desc_col):
+                        continue
+                    date_str = _clean_cell(row[date_col])
+                    desc = _clean_cell(row[desc_col])
+                    date = _parse_date(date_str)
+                    if date is None or not desc:
+                        continue
+                    if _is_pii_line(desc) or any(h in desc.lower() for h in SKIP_HINTS):
+                        continue
+                    desc = DESC_NOISE_RE.sub(" ", desc).strip(" -")
+                    if not desc:
+                        continue
+                    dep_val = _parse_amount_raw(_clean_cell(row[dep_col])) if dep_col >= 0 and dep_col < len(row) else None
+                    wd_val = _parse_amount_raw(_clean_cell(row[wd_col])) if wd_col >= 0 and wd_col < len(row) else None
+                    if wd_val is not None:
+                        transactions.append(Transaction(date=date, description=desc, amount=-wd_val))
+                    elif dep_val is not None:
+                        transactions.append(Transaction(date=date, description=desc, amount=dep_val))
+    return transactions
+
+
 def _parse_date(raw: str) -> datetime | None:
     for fmt in ("%m/%d/%Y", "%m/%d/%y", "%Y-%m-%d", "%d %b %Y", "%b %d %Y", "%b %d, %Y"):
         try:
@@ -138,7 +198,11 @@ def _extract_year(lines: list[str]) -> int | None:
 def parse_statement(pdf_bytes: bytes) -> tuple[list[Transaction], int]:
     lines = extract_lines(pdf_bytes)
     year = _extract_year(lines)
-    transactions = parse_lines(lines)
+
+    transactions = _extract_from_tables(pdf_bytes)
+    if not transactions:
+        transactions = parse_lines(lines)
+
     if year:
         for t in transactions:
             if t.date.year == 2000:

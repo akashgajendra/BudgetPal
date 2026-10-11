@@ -87,10 +87,8 @@ def upload():
     except Exception:
         return jsonify({"error": "Could not read this PDF. The file may be corrupted or password-protected."}), 400
 
-    transactions = [t for t in transactions if t.amount < 0]
-
     if not transactions:
-        return jsonify({"error": f"No withdrawals found ({line_count} text lines read). This format may not be supported yet."})
+        return jsonify({"error": f"No transactions found ({line_count} text lines read). This format may not be supported yet."})
 
     result = categorizer.categorize(transactions, use_ollama=True)
     session["rows"] = result.rows
