@@ -104,6 +104,7 @@ subscriptions:
   - chatgpt
   - gym
   - membership
+  - recurring
 
 entertainment:
   - steam
