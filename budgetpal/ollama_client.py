@@ -4,7 +4,7 @@ import time
 import requests
 
 OLLAMA_URL = "http://localhost:11434"
-MODEL = "gemma3:4b"
+MODEL = "mistral:7b"
 BATCH_SIZE = 20
 TIMEOUT = 30
 
