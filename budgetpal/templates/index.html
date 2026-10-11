@@ -7,104 +7,101 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#f5f3ef;--surface:#ffffff;--text:#1c1917;--text2:#78716c;
-  --border:#e7e5e4;--accent:#059669;--accent-hover:#047857;--accent-light:#ecfdf5;
-  --red:#ef4444;--amber:#f59e0b;
-  --radius:12px;--shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.03);
-  --shadow-lg:0 4px 16px rgba(0,0,0,.08),0 1px 4px rgba(0,0,0,.04);
+  --bg:#f8fafc;--surface:#ffffff;--text:#0f172a;--text2:#64748b;--text3:#94a3b8;
+  --border:#e2e8f0;--border2:#cbd5e1;
+  --accent:#4f46e5;--accent-hover:#4338ca;--accent-light:#eef2ff;--accent-subtle:#e0e7ff;
+  --red:#dc2626;--red-light:#fef2f2;
+  --amber-bg:#fffbeb;--amber-border:#fcd34d;--amber-text:#92400e;
+  --green-bg:#f0fdf4;--green-border:#86efac;--green-text:#166534;
+  --radius:8px;
+  --shadow:0 1px 2px rgba(0,0,0,.05);
+  --shadow-md:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.04);
 }
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh}
-
-/* logo */
-.logo{display:inline-flex;align-items:center;gap:10px;text-decoration:none}
-.logo-icon{width:36px;height:36px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center}
-.logo-icon svg{width:20px;height:20px}
-.logo-text{font-size:22px;font-weight:800;letter-spacing:-.5px;color:var(--text)}
-.logo-text span{color:var(--accent)}
+body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased;font-size:14px}
 
 /* landing */
-.landing{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px}
-.landing-card{background:var(--surface);border-radius:20px;box-shadow:var(--shadow-lg);padding:48px;max-width:520px;width:100%;text-align:center}
-.landing-card .logo{margin-bottom:32px}
-.landing-card h2{font-size:20px;font-weight:700;margin-bottom:8px}
-.landing-card .tagline{color:var(--text2);font-size:14px;margin-bottom:32px}
-
-/* upload zone */
-.upload-zone{border:2px dashed var(--border);border-radius:16px;padding:48px 24px;cursor:pointer;transition:all .25s;position:relative;background:var(--bg)}
+.landing{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+.landing-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow-md);padding:48px 40px;max-width:460px;width:100%;text-align:center}
+.landing-card .brand{font-size:20px;font-weight:700;margin-bottom:4px;letter-spacing:-.3px}
+.landing-card .brand span{color:var(--accent)}
+.landing-card .tagline{color:var(--text2);font-size:13px;margin-bottom:28px}
+.upload-zone{border:1.5px dashed var(--border2);border-radius:10px;padding:40px 20px;cursor:pointer;transition:all .2s;position:relative;background:var(--bg)}
 .upload-zone:hover,.upload-zone.dragover{border-color:var(--accent);background:var(--accent-light)}
 .upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer}
-.upload-icon{width:56px;height:56px;background:var(--accent-light);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
-.upload-icon svg{width:28px;height:28px;color:var(--accent)}
-.upload-zone .label{font-size:15px;font-weight:600;color:var(--text)}
-.upload-zone .sub{font-size:13px;color:var(--text2);margin-top:6px}
-.upload-zone .browse{display:inline-block;margin-top:14px;font-size:13px;font-weight:600;color:var(--accent);padding:6px 16px;border:1px solid var(--accent);border-radius:8px;pointer-events:none}
-.filename-display{font-size:13px;color:var(--accent);margin-top:12px;font-weight:600;display:none}
-
-.privacy-note{display:flex;align-items:center;gap:6px;justify-content:center;margin-top:20px;font-size:12px;color:var(--text2)}
-.privacy-note svg{width:14px;height:14px;color:var(--green)}
+.upload-icon{width:44px;height:44px;background:var(--accent-light);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
+.upload-icon svg{width:22px;height:22px;color:var(--accent)}
+.upload-zone .label{font-size:14px;font-weight:600;color:var(--text)}
+.upload-zone .sub{font-size:12px;color:var(--text3);margin-top:4px}
+.privacy-note{display:flex;align-items:center;gap:5px;justify-content:center;margin-top:16px;font-size:11px;color:var(--text3)}
+.privacy-note svg{width:12px;height:12px}
+.landing-error{display:none;margin-top:14px;background:var(--red-light);border:1px solid #fecaca;color:var(--red);border-radius:var(--radius);padding:10px 14px;font-size:13px;text-align:left}
 
 /* processing */
-.processing{display:none;text-align:center;padding:48px 0}
-.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 16px}
+.processing{display:none;text-align:center;padding:80px 0}
+.spinner{width:28px;height:28px;border:2.5px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;margin:0 auto 12px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* dashboard layout */
-.dashboard{display:none}
-.dash-nav{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 24px;position:sticky;top:0;z-index:20}
-.dash-nav .inner{max-width:1060px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
-.dash-nav .right{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--text2)}
-.dash-content{max-width:1060px;margin:0 auto;padding:28px 24px 100px}
+/* dashboard */
+.dashboard{display:none;min-height:100vh}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:48px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:20}
+.topbar .brand{font-size:15px;font-weight:700;letter-spacing:-.2px}
+.topbar .brand span{color:var(--accent)}
+.topbar .meta{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--text2)}
+.topbar .btn-sm{font-size:12px;padding:5px 14px;border-radius:6px;background:var(--accent);color:#fff;border:none;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block}
+.topbar .btn-sm:hover{background:var(--accent-hover)}
+.main{max-width:1120px;margin:0 auto;padding:24px 24px 80px}
 
-/* warnings */
-.alert{border-radius:var(--radius);padding:12px 16px;font-size:13px;margin-bottom:20px;display:none;display:flex;align-items:center;gap:8px}
-.alert.warn{background:#fef3c7;border:1px solid #fcd34d;color:#92400e}
-.alert.ok{background:var(--accent-light);border:1px solid #6ee7b7;color:#065f46}
-.alert svg{width:16px;height:16px;flex-shrink:0}
+/* alerts */
+.alert{border-radius:var(--radius);padding:10px 14px;font-size:13px;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.alert.warn{background:var(--amber-bg);border:1px solid var(--amber-border);color:var(--amber-text)}
+.alert.ok{background:var(--green-bg);border:1px solid var(--green-border);color:var(--green-text)}
+.alert svg{width:15px;height:15px;flex-shrink:0}
+.alert-wrap{display:none}
 
 /* kpis */
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:32px}
-.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
-.kpi .kpi-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--text2)}
-.kpi .kpi-value{font-size:26px;font-weight:700;margin-top:6px;color:var(--text)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.kpi-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.6px;color:var(--text2)}
+.kpi-value{font-size:22px;font-weight:700;margin-top:4px;letter-spacing:-.3px}
 
-/* sections */
-.section{margin-bottom:40px}
-.section-title{font-size:16px;font-weight:700;margin-bottom:16px;color:var(--text)}
+/* cards */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.card-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text2)}
+.card-body{padding:16px 18px}
+.card-body svg{display:block;max-width:100%}
 
-/* chart grid */
-.chart-row{display:grid;grid-template-columns:3fr 2fr;gap:28px;align-items:start}
-.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
-.chart-card h3{font-size:14px;font-weight:600;color:var(--text2);margin-bottom:16px;text-transform:uppercase;letter-spacing:.5px;font-size:11px}
+/* grid */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.grid-6-4{display:grid;grid-template-columns:3fr 2fr;gap:16px;margin-bottom:16px}
 
 /* tables */
 table{width:100%;border-collapse:collapse;font-size:13px}
-th{text-align:left;padding:10px 12px;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--text2);border-bottom:2px solid var(--border)}
-td{padding:10px 12px;border-bottom:1px solid var(--border)}
-tr:hover td{background:var(--accent-light)}
-.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+th{text-align:left;padding:8px 14px;font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--text3);background:var(--bg);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:1}
+td{padding:8px 14px;border-bottom:1px solid var(--border);color:var(--text)}
+tr:hover td{background:#f8fafc}
+td.amount{font-variant-numeric:tabular-nums;font-weight:500}
+td.cat-badge span{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500;background:var(--bg);border:1px solid var(--border);color:var(--text2)}
 
-/* category editor */
-.editor-toggle{font-size:13px;font-weight:600;color:var(--accent);cursor:pointer;display:inline-flex;align-items:center;gap:6px;margin-bottom:16px;border:1px solid var(--accent);background:var(--accent-light);padding:8px 16px;border-radius:8px;transition:all .15s}
-.editor-toggle:hover{background:var(--accent);color:#fff}
-.editor-content{display:none;margin-bottom:32px}
-.editor-content.open{display:block}
-.editor-content select{border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:13px;background:var(--surface)}
+/* inline edit */
+.cat-select{border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:12px;background:var(--surface);color:var(--text);cursor:pointer}
+.cat-select:focus{outline:2px solid var(--accent);outline-offset:-1px}
 
-/* download bar */
-.download-bar{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:14px 24px;z-index:10;box-shadow:0 -4px 12px rgba(0,0,0,.08);display:none}
-.download-bar .inner{max-width:1060px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
-.download-bar .summary{font-size:13px;color:var(--text2)}
-.download-bar .summary strong{color:var(--text);font-weight:700}
-.btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:14px;font-weight:600;cursor:pointer;transition:background .15s;text-decoration:none;display:inline-block}
-.btn:hover{background:var(--accent-hover)}
-.btn-dark{background:var(--text)}
-.btn-dark:hover{background:#334155}
+/* remove */
+.rm{background:none;border:none;color:var(--text3);cursor:pointer;padding:4px;border-radius:4px;line-height:1;font-size:14px;display:flex;align-items:center;justify-content:center;width:24px;height:24px}
+.rm:hover{background:var(--red-light);color:var(--red)}
+.rm svg{width:14px;height:14px}
 
-/* responsive */
-@media(max-width:700px){
+/* action row */
+.actions{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.btn-outline{font-size:12px;font-weight:600;padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;transition:all .15s}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
+
+.scroll-y{overflow-y:auto}
+
+@media(max-width:768px){
   .kpis{grid-template-columns:repeat(2,1fr)}
-  .chart-row{grid-template-columns:1fr}
-  .landing-card{padding:32px 24px}
+  .grid-2,.grid-6-4{grid-template-columns:1fr}
 }
 @media(max-width:480px){
   .kpis{grid-template-columns:1fr}
@@ -113,18 +110,11 @@ tr:hover td{background:var(--accent-light)}
 </head>
 <body>
 
-<!-- LANDING SCREEN -->
+<!-- LANDING -->
 <div class="landing" id="landing">
   <div class="landing-card">
-    <div class="logo">
-      <div class="logo-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-      </div>
-      <div class="logo-text">Budget<span>Pal</span></div>
-    </div>
-    <h2>Analyze your spending</h2>
-    <p class="tagline">Upload a bank statement PDF and get a full breakdown with AI-powered categorization</p>
-
+    <div class="brand">Budget<span>Pal</span></div>
+    <p class="tagline">Upload a bank statement PDF for AI-powered spending analysis</p>
     <div class="upload-zone" id="dropzone">
       <input type="file" accept=".pdf" id="fileInput">
       <div class="upload-icon">
@@ -132,16 +122,11 @@ tr:hover td{background:var(--accent-light)}
       </div>
       <div class="label">Drop your statement here</div>
       <div class="sub">PDF files only</div>
-      <div class="browse">Browse files</div>
     </div>
-    <div class="filename-display" id="filename"></div>
-
-    <div class="landing-error" id="landingError" style="display:none;margin-top:16px;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;border-radius:10px;padding:12px 16px;font-size:13px;text-align:left;display:none">
-    </div>
-
+    <div class="landing-error" id="landingError"></div>
     <div class="privacy-note">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      Everything runs locally. No data leaves your machine.
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Everything stays on your machine
     </div>
   </div>
 </div>
@@ -149,28 +134,24 @@ tr:hover td{background:var(--accent-light)}
 <!-- PROCESSING -->
 <div class="processing" id="processing">
   <div class="spinner"></div>
-  <div style="font-size:14px;color:var(--text2)">Analyzing your statement&hellip;</div>
+  <div style="font-size:13px;color:var(--text2)">Analyzing statement&hellip;</div>
 </div>
 
 <!-- DASHBOARD -->
 <div class="dashboard" id="dashboard">
-  <nav class="dash-nav">
-    <div class="inner">
-      <div class="logo" style="cursor:default">
-        <div class="logo-icon" style="width:28px;height:28px;border-radius:8px">
-          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-        </div>
-        <div class="logo-text" style="font-size:17px">Budget<span>Pal</span></div>
-      </div>
-      <div class="right">
-        <span id="navFilename"></span>
-      </div>
+  <div class="topbar">
+    <div class="brand">Budget<span>Pal</span></div>
+    <div class="meta">
+      <span id="navFilename"></span>
+      <a class="btn-sm" id="downloadBtn" href="/download" download="budgetpal-report.html">Export</a>
     </div>
-  </nav>
+  </div>
 
-  <div class="dash-content">
-    <div class="alert warn" id="warning"></div>
-    <div class="alert ok" id="successMsg"></div>
+  <div class="main">
+    <div class="alert-wrap" id="alertWrap">
+      <div class="alert warn" id="warning" style="display:none"></div>
+      <div class="alert ok" id="successMsg" style="display:none"></div>
+    </div>
 
     <div class="kpis">
       <div class="kpi"><div class="kpi-label">Total Spent</div><div class="kpi-value" id="totalSpent"></div></div>
@@ -179,153 +160,139 @@ tr:hover td{background:var(--accent-light)}
       <div class="kpi"><div class="kpi-label">Avg Purchase</div><div class="kpi-value" id="avgPurchase"></div></div>
     </div>
 
-    <button class="editor-toggle" id="editorToggle">&#9998; Review &amp; fix categories</button>
-    <div class="editor-content" id="editorContent">
-      <p style="font-size:13px;color:var(--text2);margin-bottom:12px">Change a category below, then click update.</p>
-      <div class="table-wrap">
-        <table id="editorTable">
-          <thead><tr><th>Date</th><th>Description</th><th>Amount</th><th>Category</th></tr></thead>
-          <tbody></tbody>
-        </table>
+    <div class="grid-6-4">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Spending by Category</span></div>
+        <div class="card-body" id="barChart"></div>
       </div>
-      <button class="btn" style="margin-top:16px" id="recalcBtn">Update charts</button>
-    </div>
-
-    <div class="section">
-      <div class="chart-row">
-        <div class="chart-card"><h3>Spending by Category</h3><div id="barChart"></div></div>
-        <div class="chart-card"><h3>Breakdown</h3><div id="donutChart"></div></div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Breakdown</span></div>
+        <div class="card-body" id="donutChart" style="display:flex;justify-content:center"></div>
       </div>
     </div>
 
-    <div class="section">
-      <div class="chart-row">
-        <div class="chart-card"><h3>Spending Over Time</h3><div id="lineChart"></div></div>
-        <div class="chart-card"><h3>Top Merchants</h3><div id="merchantsWrap"></div></div>
+    <div class="grid-6-4">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Spending Over Time</span></div>
+        <div class="card-body" id="lineChart"></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Top Merchants</span></div>
+        <div class="scroll-y" id="merchantsWrap" style="max-height:240px"></div>
       </div>
     </div>
 
-    <div class="section">
-      <div class="section-title">All Transactions</div>
-      <div class="table-wrap" id="allTxnWrap"></div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Transactions</span>
+        <span style="font-size:11px;color:var(--text3)" id="txnSubtitle"></span>
+      </div>
+      <div class="scroll-y" style="max-height:480px" id="allTxnWrap"></div>
     </div>
-  </div>
-</div>
-
-<div class="download-bar" id="downloadBar">
-  <div class="inner">
-    <div class="summary" id="downloadSummary"></div>
-    <a class="btn" id="downloadBtn" download="budgetpal-report.html">Download Report</a>
   </div>
 </div>
 
 <script>
 const $ = s => document.querySelector(s);
-const money = v => '$' + Math.abs(v).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+const money = v => '$' + Math.abs(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
 
 let currentFilename = '';
+let currentCategories = [];
+const dropzone = $('#dropzone'), fileInput = $('#fileInput');
 
-const dropzone = $('#dropzone');
-const fileInput = $('#fileInput');
+['dragenter','dragover'].forEach(e=>dropzone.addEventListener(e,ev=>{ev.preventDefault();dropzone.classList.add('dragover')}));
+['dragleave','drop'].forEach(e=>dropzone.addEventListener(e,ev=>{ev.preventDefault();dropzone.classList.remove('dragover')}));
+dropzone.addEventListener('drop',ev=>{if(ev.dataTransfer.files.length)upload(ev.dataTransfer.files[0])});
+fileInput.addEventListener('change',()=>{if(fileInput.files.length)upload(fileInput.files[0])});
 
-['dragenter','dragover'].forEach(e => dropzone.addEventListener(e, ev => {ev.preventDefault(); dropzone.classList.add('dragover')}));
-['dragleave','drop'].forEach(e => dropzone.addEventListener(e, ev => {ev.preventDefault(); dropzone.classList.remove('dragover')}));
-dropzone.addEventListener('drop', ev => { if(ev.dataTransfer.files.length) upload(ev.dataTransfer.files[0]); });
-fileInput.addEventListener('change', () => { if(fileInput.files.length) upload(fileInput.files[0]); });
-
-function upload(file) {
-  if(!file.name.endsWith('.pdf')) { showWarning('Please upload a PDF file.'); return; }
-  currentFilename = file.name;
-  $('#landing').style.display = 'none';
-  $('#processing').style.display = 'block';
-
-  const form = new FormData();
-  form.append('file', file);
-
-  fetch('/upload', {method:'POST', body:form})
-    .then(r => {
-      if(!r.ok) return r.json().catch(() => ({error:'Something went wrong processing your statement.'}));
-      return r.json();
-    })
-    .then(data => {
-      $('#processing').style.display = 'none';
-      if(data.error) { showLandingError(data.error); $('#landing').style.display='flex'; return; }
+function upload(file){
+  if(!file.name.endsWith('.pdf')){showLandingError('Please upload a PDF file.');return}
+  currentFilename=file.name;
+  $('#landing').style.display='none';
+  $('#processing').style.display='block';
+  const form=new FormData();
+  form.append('file',file);
+  fetch('/upload',{method:'POST',body:form})
+    .then(r=>{if(!r.ok)return r.json().catch(()=>({error:'Failed to process statement.'}));return r.json()})
+    .then(data=>{
+      $('#processing').style.display='none';
+      if(data.error){showLandingError(data.error);$('#landing').style.display='flex';return}
       render(data);
     })
-    .catch(() => {
-      $('#processing').style.display = 'none';
-      showLandingError('Something went wrong processing your statement.');
-      $('#landing').style.display = 'flex';
+    .catch(()=>{$('#processing').style.display='none';showLandingError('Failed to process statement.');$('#landing').style.display='flex'});
+}
+
+function showLandingError(msg){const el=$('#landingError');el.textContent=msg;el.style.display='block'}
+
+function render(data){
+  $('#alertWrap').style.display='block';
+  if(data.ollama_warning){
+    const el=$('#warning');
+    el.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'+esc(data.ollama_warning);
+    el.style.display='flex';
+  } else { $('#warning').style.display='none' }
+  if(data.ollama_used&&!data.ollama_warning){
+    const el=$('#successMsg');
+    el.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>AI categorization applied';
+    el.style.display='flex';
+  }
+  $('#navFilename').textContent=currentFilename;
+  const s=data.summary;
+  $('#totalSpent').textContent=money(s.total_spent);
+  $('#largestPurchase').textContent=money(s.largest_purchase);
+  $('#txnCount').textContent=s.transaction_count;
+  $('#avgPurchase').textContent=money(s.average_transaction);
+  $('#barChart').innerHTML=data.charts.bar;
+  $('#donutChart').innerHTML=data.charts.donut;
+  $('#lineChart').innerHTML=data.charts.line;
+  $('#merchantsWrap').innerHTML=data.tables.merchants;
+  currentCategories=data.categories||[];
+  buildTxnTable(data.rows);
+  $('#txnSubtitle').textContent=data.rows.length+' items';
+  $('#dashboard').style.display='block';
+}
+
+function buildTxnTable(rows){
+  const wrap=$('#allTxnWrap');
+  const opts=c=>currentCategories.map(cat=>`<option${cat===c?' selected':''}>${esc(cat)}</option>`).join('');
+  let h='<table><thead><tr><th>Date</th><th>Description</th><th>Category</th><th style="text-align:right">Amount</th><th style="width:32px"></th></tr></thead><tbody>';
+  rows.forEach((r,i)=>{
+    h+=`<tr>
+      <td style="white-space:nowrap">${r.date}</td>
+      <td>${esc(r.description)}</td>
+      <td><select class="cat-select" data-idx="${i}">${opts(r.category)}</select></td>
+      <td class="amount" style="text-align:right">${money(r.amount)}</td>
+      <td><button class="rm" data-idx="${i}" title="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></td>
+    </tr>`;
+  });
+  h+='</tbody></table>';
+  wrap.innerHTML=h;
+}
+
+function apiCall(url,body){
+  return fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+    .then(r=>r.text())
+    .then(text=>{
+      try{return JSON.parse(text)}
+      catch(e){console.error('bad json:',text.slice(0,200));throw e}
     });
 }
 
-function showWarning(msg) {
-  const el = $('#warning');
-  el.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>' + esc(msg);
-  el.style.display = 'flex';
-}
-
-function showLandingError(msg) {
-  const el = $('#landingError');
-  el.textContent = msg;
-  el.style.display = 'block';
-}
-
-function render(data) {
-  if(data.ollama_warning) { showWarning(data.ollama_warning); }
-  if(data.ollama_used && !data.ollama_warning) {
-    const el = $('#successMsg');
-    el.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>AI categorization complete';
-    el.style.display = 'flex';
-  }
-
-  $('#navFilename').textContent = currentFilename;
-
-  const s = data.summary;
-  $('#totalSpent').textContent = money(s.total_spent);
-  $('#largestPurchase').textContent = money(s.largest_purchase);
-  $('#txnCount').textContent = s.transaction_count;
-  $('#avgPurchase').textContent = money(s.average_transaction);
-
-  $('#barChart').innerHTML = data.charts.bar;
-  $('#donutChart').innerHTML = data.charts.donut;
-  $('#lineChart').innerHTML = data.charts.line;
-  $('#merchantsWrap').innerHTML = data.tables.merchants;
-  $('#allTxnWrap').innerHTML = data.tables.transactions;
-
-  buildEditor(data.rows, data.categories);
-
-  $('#dashboard').style.display = 'block';
-  $('#downloadBar').style.display = 'block';
-  $('#downloadSummary').innerHTML = `<strong>${s.transaction_count} transactions</strong> &middot; ${money(s.total_spent)} spent`;
-  $('#downloadBtn').href = '/download';
-}
-
-function buildEditor(rows, categories) {
-  const tbody = $('#editorTable tbody');
-  tbody.innerHTML = '';
-  rows.forEach((r, i) => {
-    const tr = document.createElement('tr');
-    const opts = categories.map(c => `<option${c===r.category?' selected':''}>${c}</option>`).join('');
-    tr.innerHTML = `<td>${r.date}</td><td>${esc(r.description)}</td><td>${money(r.amount)}</td><td><select data-idx="${i}">${opts}</select></td>`;
-    tbody.appendChild(tr);
-  });
-}
-
-$('#editorToggle').addEventListener('click', () => {
-  $('#editorContent').classList.toggle('open');
+document.addEventListener('click',ev=>{
+  const btn=ev.target.closest('.rm');
+  if(!btn)return;
+  btn.closest('tr').style.opacity='0.3';
+  apiCall('/remove',{index:parseInt(btn.dataset.idx)}).then(render).catch(e=>alert('Remove failed: '+e));
 });
 
-$('#recalcBtn').addEventListener('click', () => {
-  const selects = document.querySelectorAll('#editorTable select');
-  const updates = {};
-  selects.forEach(s => { updates[s.dataset.idx] = s.value; });
-  fetch('/recalculate', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({updates})})
-    .then(r => r.json())
-    .then(data => render(data));
+document.addEventListener('change',ev=>{
+  const sel=ev.target.closest('.cat-select');
+  if(!sel)return;
+  const updates={};
+  document.querySelectorAll('.cat-select').forEach(s=>{updates[s.dataset.idx]=s.value});
+  apiCall('/recalculate',{updates}).then(render).catch(e=>alert('Update failed: '+e));
 });
-
-function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 </script>
 </body>
 </html>

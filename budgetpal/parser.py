@@ -19,16 +19,19 @@ YEAR_HINT_RE = re.compile(
 )
 AMOUNT_RE = re.compile(r"(-?\(?\$?-?[\d,]+\.\d{2}\)?\s*(?:CR|DR)?)\s*$", re.IGNORECASE)
 AMOUNT_ALL_RE = re.compile(r"(-?\(?\$?-?[\d,]+\.\d{2}\)?)\s*(?:CR|DR)?", re.IGNORECASE)
-CREDIT_HINTS = ("deposit", "refund", "credit", "reversal", "interest earned", "payroll",
-                "interest payment", "direct dep", "transfer from")
+CREDIT_HINTS = (
+    "direct dep", "transfer from", "interest payment", "interest earned",
+    "mobile deposit", "atm deposit", "cash deposit", "ach credit",
+    "deposit", "refund", "reversal", "payroll", "reimbursement",
+)
 SKIP_HINTS = ("balance", "total", "subtotal", "beginning balance", "ending balance",
               "average ledger", "average balance", "interest paid", "overdraft protection",
               "continued on", "transaction history", "activity summary", "page ")
 DESC_NOISE_RE = re.compile(r"\s*-?\s*\d{4}\s+merch\s+id\s+\d+\s*", re.IGNORECASE)
 
 PII_PATTERNS = [
-    re.compile(r"\b\d{3}-\d{2}-\d{4}\b"),           # SSN
-    re.compile(r"\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b"),  # full card number
+    re.compile(r"\b\d{3}-\d{2}-\d{4}\b"),
+    re.compile(r"\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b"),
     re.compile(r"\baccount\s*#?\s*:?\s*\d{4,}\b", re.IGNORECASE),
     re.compile(r"\bacct\s*#?\s*:?\s*\d{4,}\b", re.IGNORECASE),
     re.compile(r"\brouting\s*#?\s*:?\s*\d{9}\b", re.IGNORECASE),
@@ -65,83 +68,6 @@ def extract_lines(pdf_bytes: bytes) -> list[str]:
     return lines
 
 
-AMOUNT_NUM_RE = re.compile(r"^[\d,]+\.\d{2}$")
-
-
-DEPOSIT_HINTS = ("deposit", "credits", "credit", "additions", "money in")
-WITHDRAW_HINTS = ("withdrawal", "debits", "debit", "subtractions", "money out", "charges")
-
-
-def _find_column_regions(page) -> tuple[float, float] | None:
-    words = page.extract_words() or []
-    dep_x = None
-    wd_x = None
-    for w in words:
-        t = w["text"].lower()
-        if dep_x is None and any(h in t for h in DEPOSIT_HINTS):
-            dep_x = float(w["x0"])
-        elif wd_x is None and any(h in t for h in WITHDRAW_HINTS):
-            wd_x = float(w["x0"])
-    if dep_x is not None and wd_x is not None:
-        return dep_x, wd_x
-    return None
-
-
-def _extract_with_positions(pdf_bytes: bytes) -> list[Transaction]:
-    transactions = []
-    with pdfplumber.open(io.BytesIO(pdf_bytes)) as pdf:
-        for page in pdf.pages:
-            regions = _find_column_regions(page)
-            if regions is None:
-                continue
-            dep_x, wd_x = regions
-            midpoint = (dep_x + wd_x) / 2
-
-            words = page.extract_words() or []
-            rows_by_top: dict[float, list] = {}
-            for w in words:
-                top = round(float(w["top"]), 0)
-                rows_by_top.setdefault(top, []).append(w)
-
-            for top in sorted(rows_by_top):
-                row_words = sorted(rows_by_top[top], key=lambda w: float(w["x0"]))
-                if not row_words:
-                    continue
-                first_text = row_words[0]["text"]
-                date = _parse_date(first_text)
-                if date is None:
-                    continue
-                amounts = []
-                desc_parts = []
-                for w in row_words[1:]:
-                    txt = w["text"]
-                    if AMOUNT_NUM_RE.match(txt.replace(",", "").replace("$", "")):
-                        x = float(w["x0"])
-                        is_deposit = x < midpoint
-                        val = float(txt.replace(",", "").replace("$", ""))
-                        amounts.append((val, is_deposit, x))
-                    elif not AMOUNT_NUM_RE.match(txt.replace(",", "").replace("$", "")):
-                        if float(w["x0"]) < dep_x - 20:
-                            desc_parts.append(txt)
-
-                desc = " ".join(desc_parts).strip()
-                desc = DESC_NOISE_RE.sub(" ", desc).strip(" -")
-                if not desc or any(h in desc.lower() for h in SKIP_HINTS):
-                    continue
-                if _is_pii_line(desc):
-                    continue
-                if not amounts:
-                    continue
-
-                non_balance = [a for a in amounts if a[2] < wd_x + 80]
-                if not non_balance:
-                    continue
-                val, is_deposit, _ = non_balance[0]
-                amount = val if is_deposit else -val
-                transactions.append(Transaction(date=date, description=desc, amount=amount))
-    return transactions
-
-
 def _parse_date(raw: str) -> datetime | None:
     for fmt in ("%m/%d/%Y", "%m/%d/%y", "%Y-%m-%d", "%d %b %Y", "%b %d %Y", "%b %d, %Y"):
         try:
@@ -173,7 +99,7 @@ def _parse_amount(raw: str) -> float | None:
         return value
     if is_debit or negative:
         return -value
-    return -value  # default: unsigned amounts on statements are purchases
+    return -value
 
 
 def parse_lines(lines: list[str]) -> list[Transaction]:
@@ -215,13 +141,7 @@ def _extract_year(lines: list[str]) -> int | None:
 def parse_statement(pdf_bytes: bytes) -> tuple[list[Transaction], int]:
     lines = extract_lines(pdf_bytes)
     year = _extract_year(lines)
-
-    transactions = _extract_with_positions(pdf_bytes)
-    if transactions:
-        print(f"[parser] extracted {len(transactions)} transactions via column positions")
-    else:
-        print("[parser] column extraction found nothing, falling back to text parsing")
-        transactions = parse_lines(lines)
+    transactions = parse_lines(lines)
 
     if year:
         for t in transactions:

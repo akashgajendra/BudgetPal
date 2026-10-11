@@ -1,19 +1,27 @@
 import html
+import math
 from pathlib import Path
 
-from flask import Flask, jsonify, render_template, request, session
+from flask import Flask, jsonify, render_template, request
 
 from budgetpal import analyzer, categorizer, parser, report, svg_charts
 
 app = Flask(__name__, template_folder=str(Path(__file__).parent / "templates"))
-app.secret_key = "budgetpal-local-only"
+
+_store: dict[str, list[dict]] = {"rows": []}
+
+
+def _safe(v: float) -> float:
+    if math.isnan(v) or math.isinf(v):
+        return 0.0
+    return v
 
 
 def _build_response(rows: list[dict], ollama_used: bool = False, ollama_warning: str | None = None) -> dict:
     df = analyzer.to_frame(rows)
     s = analyzer.summary(df)
     cats = analyzer.by_category(df)
-    merchants = analyzer.top_merchants(df)
+    merchants = analyzer.top_merchants(df, n=5)
     daily = analyzer.daily_spend(df)
 
     bar_svg = svg_charts.bar_chart(cats["category"].tolist(), cats["total"].tolist()) if len(cats) else ""
@@ -23,9 +31,8 @@ def _build_response(rows: list[dict], ollama_used: bool = False, ollama_warning:
     ) if len(daily) else ""
 
     merchant_html = _table_html(merchants, {"merchant": "Merchant", "total": "Spent", "count": "Times"})
-    txn_df = df.sort_values("date")[["date", "description", "category", "amount"]].copy()
+    txn_df = df[["date", "description", "category", "amount"]].copy()
     txn_df["date"] = txn_df["date"].dt.strftime("%Y-%m-%d")
-    txn_html = _table_html(txn_df, {"date": "Date", "description": "Description", "category": "Category", "amount": "Amount"})
 
     display_rows = []
     for _, row in txn_df.iterrows():
@@ -33,18 +40,18 @@ def _build_response(rows: list[dict], ollama_used: bool = False, ollama_warning:
             "date": row["date"],
             "description": row["description"],
             "category": row["category"],
-            "amount": row["amount"],
+            "amount": _safe(float(row["amount"])),
         })
 
     return {
         "summary": {
-            "total_spent": s["total_spent"],
-            "largest_purchase": s["largest_purchase"],
+            "total_spent": _safe(s["total_spent"]),
+            "largest_purchase": _safe(s["largest_purchase"]),
             "transaction_count": s["transaction_count"],
-            "average_transaction": s["average_transaction"],
+            "average_transaction": _safe(s["average_transaction"]),
         },
         "charts": {"bar": bar_svg, "donut": donut_svg, "line": line_svg},
-        "tables": {"merchants": merchant_html, "transactions": txn_html},
+        "tables": {"merchants": merchant_html},
         "rows": display_rows,
         "categories": sorted(set(categorizer.load_rules()) | {categorizer.UNCATEGORIZED}),
         "ollama_used": ollama_used,
@@ -70,6 +77,12 @@ def _table_html(df, columns: dict[str, str]) -> str:
     return f"<table><thead><tr>{head}</tr></thead><tbody>{''.join(rows)}</tbody></table>"
 
 
+@app.after_request
+def no_cache(response):
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -91,30 +104,45 @@ def upload():
         return jsonify({"error": f"No transactions found ({line_count} text lines read). This format may not be supported yet."})
 
     result = categorizer.categorize(transactions, use_ollama=True)
-    session["rows"] = result.rows
+    rows = result.rows
+    for r in rows:
+        if not isinstance(r["date"], str):
+            r["date"] = r["date"].strftime("%Y-%m-%d")
+    rows.sort(key=lambda r: r["date"])
+    _store["rows"] = rows
 
-    return jsonify(_build_response(result.rows, result.ollama_used, result.ollama_warning))
+    return jsonify(_build_response(rows, result.ollama_used, result.ollama_warning))
 
 
 @app.route("/recalculate", methods=["POST"])
 def recalculate():
     data = request.get_json()
     updates = data.get("updates", {})
-    rows = session.get("rows", [])
+    rows = list(_store["rows"])
 
-    sorted_rows = sorted(rows, key=lambda r: r["date"])
     for idx_str, category in updates.items():
         i = int(idx_str)
-        if 0 <= i < len(sorted_rows):
-            sorted_rows[i]["category"] = category
+        if 0 <= i < len(rows):
+            rows[i]["category"] = category
 
-    session["rows"] = sorted_rows
-    return jsonify(_build_response(sorted_rows))
+    _store["rows"] = rows
+    return jsonify(_build_response(rows))
+
+
+@app.route("/remove", methods=["POST"])
+def remove():
+    data = request.get_json()
+    idx = data.get("index")
+    rows = list(_store["rows"])
+    if isinstance(idx, int) and 0 <= idx < len(rows):
+        rows.pop(idx)
+    _store["rows"] = rows
+    return jsonify(_build_response(rows))
 
 
 @app.route("/download")
 def download():
-    rows = session.get("rows", [])
+    rows = _store["rows"]
     if not rows:
         return "No data", 404
     df = analyzer.to_frame(rows)
@@ -123,7 +151,6 @@ def download():
         "Content-Type": "text/html",
         "Content-Disposition": "attachment; filename=budgetpal-report.html",
     }
-
 
 
 def run(port: int = 8000):
