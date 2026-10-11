@@ -22,11 +22,13 @@ def report_cmd(statement: Path, output: str, no_ollama: bool, no_report: bool):
     pdf_bytes = statement.read_bytes()
     transactions, line_count = parser.parse_statement(pdf_bytes)
 
+    transactions = [t for t in transactions if t.amount < 0]
+
     if not transactions:
-        click.echo(f"No transactions found in {statement.name} ({line_count} text lines read).")
+        click.echo(f"No withdrawals found in {statement.name} ({line_count} text lines read).")
         raise SystemExit(1)
 
-    click.echo(f"Parsed {len(transactions)} transactions from {statement.name}")
+    click.echo(f"Parsed {len(transactions)} withdrawals from {statement.name}")
 
     result = categorizer.categorize(transactions, use_ollama=not no_ollama)
     if result.ollama_warning:

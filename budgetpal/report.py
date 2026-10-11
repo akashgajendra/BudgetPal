@@ -78,7 +78,7 @@ svg {{ display: block; }}
 
 <div class="kpis">
   <div class="kpi"><span>Total Spent</span><b>{_money(s['total_spent'])}</b></div>
-  <div class="kpi"><span>Money In</span><b>{_money(s['total_income'])}</b></div>
+  <div class="kpi"><span>Largest Purchase</span><b>{_money(s['largest_purchase'])}</b></div>
   <div class="kpi"><span>Transactions</span><b>{s['transaction_count']}</b></div>
   <div class="kpi"><span>Avg. Purchase</span><b>{_money(s['average_transaction'])}</b></div>
 </div>

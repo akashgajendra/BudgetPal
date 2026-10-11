@@ -39,7 +39,7 @@ def _build_response(rows: list[dict], ollama_used: bool = False, ollama_warning:
     return {
         "summary": {
             "total_spent": s["total_spent"],
-            "total_income": s["total_income"],
+            "largest_purchase": s["largest_purchase"],
             "transaction_count": s["transaction_count"],
             "average_transaction": s["average_transaction"],
         },
@@ -87,8 +87,10 @@ def upload():
     except Exception:
         return jsonify({"error": "Could not read this PDF. The file may be corrupted or password-protected."}), 400
 
+    transactions = [t for t in transactions if t.amount < 0]
+
     if not transactions:
-        return jsonify({"error": f"No transactions found ({line_count} text lines read). This format may not be supported yet."})
+        return jsonify({"error": f"No withdrawals found ({line_count} text lines read). This format may not be supported yet."})
 
     result = categorizer.categorize(transactions, use_ollama=True)
     session["rows"] = result.rows

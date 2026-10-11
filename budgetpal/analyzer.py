@@ -17,7 +17,7 @@ def summary(df: pd.DataFrame) -> dict:
     income = df[(df["category"] == "income") & (df["amount"] > 0)]["amount"].sum()
     return {
         "total_spent": float(spending["spend"].sum()),
-        "total_income": float(income),
+        "largest_purchase": float(spending["spend"].max()) if len(spending) else 0.0,
         "transaction_count": int(len(df)),
         "average_transaction": float(spending["spend"].mean()) if len(spending) else 0.0,
         "start": df["date"].min() if len(df) else None,

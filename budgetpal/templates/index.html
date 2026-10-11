@@ -174,7 +174,7 @@ tr:hover td{background:var(--accent-light)}
 
     <div class="kpis">
       <div class="kpi"><div class="kpi-label">Total Spent</div><div class="kpi-value" id="totalSpent"></div></div>
-      <div class="kpi"><div class="kpi-label">Money In</div><div class="kpi-value" id="moneyIn"></div></div>
+      <div class="kpi"><div class="kpi-label">Largest Purchase</div><div class="kpi-value" id="largestPurchase"></div></div>
       <div class="kpi"><div class="kpi-label">Transactions</div><div class="kpi-value" id="txnCount"></div></div>
       <div class="kpi"><div class="kpi-label">Avg Purchase</div><div class="kpi-value" id="avgPurchase"></div></div>
     </div>
@@ -283,7 +283,7 @@ function render(data) {
 
   const s = data.summary;
   $('#totalSpent').textContent = money(s.total_spent);
-  $('#moneyIn').textContent = money(s.total_income);
+  $('#largestPurchase').textContent = money(s.largest_purchase);
   $('#txnCount').textContent = s.transaction_count;
   $('#avgPurchase').textContent = money(s.average_transaction);
 
