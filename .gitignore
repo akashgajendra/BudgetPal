@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+dist/
+.DS_Store
+.streamlit/secrets.toml
+.python-version
+budgetpal-report.html
+*.pdf
