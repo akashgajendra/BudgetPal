@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BudgetPal</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f3ef;--surface:#ffffff;--text:#1c1917;--text2:#78716c;
+  --border:#e7e5e4;--accent:#059669;--accent-hover:#047857;--accent-light:#ecfdf5;
+  --red:#ef4444;--amber:#f59e0b;
+  --radius:12px;--shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.03);
+  --shadow-lg:0 4px 16px rgba(0,0,0,.08),0 1px 4px rgba(0,0,0,.04);
+}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh}
+
+/* logo */
+.logo{display:inline-flex;align-items:center;gap:10px;text-decoration:none}
+.logo-icon{width:36px;height:36px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center}
+.logo-icon svg{width:20px;height:20px}
+.logo-text{font-size:22px;font-weight:800;letter-spacing:-.5px;color:var(--text)}
+.logo-text span{color:var(--accent)}
+
+/* landing */
+.landing{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+.landing-card{background:var(--surface);border-radius:20px;box-shadow:var(--shadow-lg);padding:48px;max-width:520px;width:100%;text-align:center}
+.landing-card .logo{margin-bottom:32px}
+.landing-card h2{font-size:20px;font-weight:700;margin-bottom:8px}
+.landing-card .tagline{color:var(--text2);font-size:14px;margin-bottom:32px}
+
+/* upload zone */
+.upload-zone{border:2px dashed var(--border);border-radius:16px;padding:48px 24px;cursor:pointer;transition:all .25s;position:relative;background:var(--bg)}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--accent);background:var(--accent-light)}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.upload-icon{width:56px;height:56px;background:var(--accent-light);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.upload-icon svg{width:28px;height:28px;color:var(--accent)}
+.upload-zone .label{font-size:15px;font-weight:600;color:var(--text)}
+.upload-zone .sub{font-size:13px;color:var(--text2);margin-top:6px}
+.upload-zone .browse{display:inline-block;margin-top:14px;font-size:13px;font-weight:600;color:var(--accent);padding:6px 16px;border:1px solid var(--accent);border-radius:8px;pointer-events:none}
+.filename-display{font-size:13px;color:var(--accent);margin-top:12px;font-weight:600;display:none}
+
+.privacy-note{display:flex;align-items:center;gap:6px;justify-content:center;margin-top:20px;font-size:12px;color:var(--text2)}
+.privacy-note svg{width:14px;height:14px;color:var(--green)}
+
+/* processing */
+.processing{display:none;text-align:center;padding:48px 0}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* dashboard layout */
+.dashboard{display:none}
+.dash-nav{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 24px;position:sticky;top:0;z-index:20}
+.dash-nav .inner{max-width:1060px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.dash-nav .right{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--text2)}
+.dash-content{max-width:1060px;margin:0 auto;padding:28px 24px 100px}
+
+/* warnings */
+.alert{border-radius:var(--radius);padding:12px 16px;font-size:13px;margin-bottom:20px;display:none;display:flex;align-items:center;gap:8px}
+.alert.warn{background:#fef3c7;border:1px solid #fcd34d;color:#92400e}
+.alert.ok{background:var(--accent-light);border:1px solid #6ee7b7;color:#065f46}
+.alert svg{width:16px;height:16px;flex-shrink:0}
+
+/* kpis */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:32px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+.kpi .kpi-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--text2)}
+.kpi .kpi-value{font-size:26px;font-weight:700;margin-top:6px;color:var(--text)}
+
+/* sections */
+.section{margin-bottom:40px}
+.section-title{font-size:16px;font-weight:700;margin-bottom:16px;color:var(--text)}
+
+/* chart grid */
+.chart-row{display:grid;grid-template-columns:3fr 2fr;gap:28px;align-items:start}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+.chart-card h3{font-size:14px;font-weight:600;color:var(--text2);margin-bottom:16px;text-transform:uppercase;letter-spacing:.5px;font-size:11px}
+
+/* tables */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:10px 12px;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--text2);border-bottom:2px solid var(--border)}
+td{padding:10px 12px;border-bottom:1px solid var(--border)}
+tr:hover td{background:var(--accent-light)}
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+
+/* category editor */
+.editor-toggle{font-size:13px;font-weight:600;color:var(--accent);cursor:pointer;display:inline-flex;align-items:center;gap:6px;margin-bottom:16px;border:1px solid var(--accent);background:var(--accent-light);padding:8px 16px;border-radius:8px;transition:all .15s}
+.editor-toggle:hover{background:var(--accent);color:#fff}
+.editor-content{display:none;margin-bottom:32px}
+.editor-content.open{display:block}
+.editor-content select{border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:13px;background:var(--surface)}
+
+/* download bar */
+.download-bar{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:14px 24px;z-index:10;box-shadow:0 -4px 12px rgba(0,0,0,.08);display:none}
+.download-bar .inner{max-width:1060px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.download-bar .summary{font-size:13px;color:var(--text2)}
+.download-bar .summary strong{color:var(--text);font-weight:700}
+.btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:14px;font-weight:600;cursor:pointer;transition:background .15s;text-decoration:none;display:inline-block}
+.btn:hover{background:var(--accent-hover)}
+.btn-dark{background:var(--text)}
+.btn-dark:hover{background:#334155}
+
+/* responsive */
+@media(max-width:700px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .chart-row{grid-template-columns:1fr}
+  .landing-card{padding:32px 24px}
+}
+@media(max-width:480px){
+  .kpis{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- LANDING SCREEN -->
+<div class="landing" id="landing">
+  <div class="landing-card">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+      </div>
+      <div class="logo-text">Budget<span>Pal</span></div>
+    </div>
+    <h2>Analyze your spending</h2>
+    <p class="tagline">Upload a bank statement PDF and get a full breakdown with AI-powered categorization</p>
+
+    <div class="upload-zone" id="dropzone">
+      <input type="file" accept=".pdf" id="fileInput">
+      <div class="upload-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      </div>
+      <div class="label">Drop your statement here</div>
+      <div class="sub">PDF files only</div>
+      <div class="browse">Browse files</div>
+    </div>
+    <div class="filename-display" id="filename"></div>
+
+    <div class="landing-error" id="landingError" style="display:none;margin-top:16px;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;border-radius:10px;padding:12px 16px;font-size:13px;text-align:left;display:none">
+    </div>
+
+    <div class="privacy-note">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Everything runs locally. No data leaves your machine.
+    </div>
+  </div>
+</div>
+
+<!-- PROCESSING -->
+<div class="processing" id="processing">
+  <div class="spinner"></div>
+  <div style="font-size:14px;color:var(--text2)">Analyzing your statement&hellip;</div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dashboard" id="dashboard">
+  <nav class="dash-nav">
+    <div class="inner">
+      <div class="logo" style="cursor:default">
+        <div class="logo-icon" style="width:28px;height:28px;border-radius:8px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+        </div>
+        <div class="logo-text" style="font-size:17px">Budget<span>Pal</span></div>
+      </div>
+      <div class="right">
+        <span id="navFilename"></span>
+      </div>
+    </div>
+  </nav>
+
+  <div class="dash-content">
+    <div class="alert warn" id="warning"></div>
+    <div class="alert ok" id="successMsg"></div>
+
+    <div class="kpis">
+      <div class="kpi"><div class="kpi-label">Total Spent</div><div class="kpi-value" id="totalSpent"></div></div>
+      <div class="kpi"><div class="kpi-label">Money In</div><div class="kpi-value" id="moneyIn"></div></div>
+      <div class="kpi"><div class="kpi-label">Transactions</div><div class="kpi-value" id="txnCount"></div></div>
+      <div class="kpi"><div class="kpi-label">Avg Purchase</div><div class="kpi-value" id="avgPurchase"></div></div>
+    </div>
+
+    <button class="editor-toggle" id="editorToggle">&#9998; Review &amp; fix categories</button>
+    <div class="editor-content" id="editorContent">
+      <p style="font-size:13px;color:var(--text2);margin-bottom:12px">Change a category below, then click update.</p>
+      <div class="table-wrap">
+        <table id="editorTable">
+          <thead><tr><th>Date</th><th>Description</th><th>Amount</th><th>Category</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <button class="btn" style="margin-top:16px" id="recalcBtn">Update charts</button>
+    </div>
+
+    <div class="section">
+      <div class="chart-row">
+        <div class="chart-card"><h3>Spending by Category</h3><div id="barChart"></div></div>
+        <div class="chart-card"><h3>Breakdown</h3><div id="donutChart"></div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="chart-row">
+        <div class="chart-card"><h3>Spending Over Time</h3><div id="lineChart"></div></div>
+        <div class="chart-card"><h3>Top Merchants</h3><div id="merchantsWrap"></div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">All Transactions</div>
+      <div class="table-wrap" id="allTxnWrap"></div>
+    </div>
+  </div>
+</div>
+
+<div class="download-bar" id="downloadBar">
+  <div class="inner">
+    <div class="summary" id="downloadSummary"></div>
+    <a class="btn" id="downloadBtn" download="budgetpal-report.html">Download Report</a>
+  </div>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const money = v => '$' + Math.abs(v).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+
+let currentFilename = '';
+
+const dropzone = $('#dropzone');
+const fileInput = $('#fileInput');
+
+['dragenter','dragover'].forEach(e => dropzone.addEventListener(e, ev => {ev.preventDefault(); dropzone.classList.add('dragover')}));
+['dragleave','drop'].forEach(e => dropzone.addEventListener(e, ev => {ev.preventDefault(); dropzone.classList.remove('dragover')}));
+dropzone.addEventListener('drop', ev => { if(ev.dataTransfer.files.length) upload(ev.dataTransfer.files[0]); });
+fileInput.addEventListener('change', () => { if(fileInput.files.length) upload(fileInput.files[0]); });
+
+function upload(file) {
+  if(!file.name.endsWith('.pdf')) { showWarning('Please upload a PDF file.'); return; }
+  currentFilename = file.name;
+  $('#landing').style.display = 'none';
+  $('#processing').style.display = 'block';
+
+  const form = new FormData();
+  form.append('file', file);
+
+  fetch('/upload', {method:'POST', body:form})
+    .then(r => {
+      if(!r.ok) return r.json().catch(() => ({error:'Something went wrong processing your statement.'}));
+      return r.json();
+    })
+    .then(data => {
+      $('#processing').style.display = 'none';
+      if(data.error) { showLandingError(data.error); $('#landing').style.display='flex'; return; }
+      render(data);
+    })
+    .catch(() => {
+      $('#processing').style.display = 'none';
+      showLandingError('Something went wrong processing your statement.');
+      $('#landing').style.display = 'flex';
+    });
+}
+
+function showWarning(msg) {
+  const el = $('#warning');
+  el.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>' + esc(msg);
+  el.style.display = 'flex';
+}
+
+function showLandingError(msg) {
+  const el = $('#landingError');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function render(data) {
+  if(data.ollama_warning) { showWarning(data.ollama_warning); }
+  if(data.ollama_used && !data.ollama_warning) {
+    const el = $('#successMsg');
+    el.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>AI categorization complete';
+    el.style.display = 'flex';
+  }
+
+  $('#navFilename').textContent = currentFilename;
+
+  const s = data.summary;
+  $('#totalSpent').textContent = money(s.total_spent);
+  $('#moneyIn').textContent = money(s.total_income);
+  $('#txnCount').textContent = s.transaction_count;
+  $('#avgPurchase').textContent = money(s.average_transaction);
+
+  $('#barChart').innerHTML = data.charts.bar;
+  $('#donutChart').innerHTML = data.charts.donut;
+  $('#lineChart').innerHTML = data.charts.line;
+  $('#merchantsWrap').innerHTML = data.tables.merchants;
+  $('#allTxnWrap').innerHTML = data.tables.transactions;
+
+  buildEditor(data.rows, data.categories);
+
+  $('#dashboard').style.display = 'block';
+  $('#downloadBar').style.display = 'block';
+  $('#downloadSummary').innerHTML = `<strong>${s.transaction_count} transactions</strong> &middot; ${money(s.total_spent)} spent`;
+  $('#downloadBtn').href = '/download';
+}
+
+function buildEditor(rows, categories) {
+  const tbody = $('#editorTable tbody');
+  tbody.innerHTML = '';
+  rows.forEach((r, i) => {
+    const tr = document.createElement('tr');
+    const opts = categories.map(c => `<option${c===r.category?' selected':''}>${c}</option>`).join('');
+    tr.innerHTML = `<td>${r.date}</td><td>${esc(r.description)}</td><td>${money(r.amount)}</td><td><select data-idx="${i}">${opts}</select></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+$('#editorToggle').addEventListener('click', () => {
+  $('#editorContent').classList.toggle('open');
+});
+
+$('#recalcBtn').addEventListener('click', () => {
+  const selects = document.querySelectorAll('#editorTable select');
+  const updates = {};
+  selects.forEach(s => { updates[s.dataset.idx] = s.value; });
+  fetch('/recalculate', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({updates})})
+    .then(r => r.json())
+    .then(data => render(data));
+});
+
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+</script>
+</body>
+</html>
