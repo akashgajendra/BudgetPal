@@ -26,8 +26,9 @@ def summary(df: pd.DataFrame) -> dict:
 
 
 def by_category(df: pd.DataFrame) -> pd.DataFrame:
-    spending = df[df["spend"] > 0]
-    grouped = spending.groupby("category")["spend"].agg(["sum", "count"]).reset_index()
+    df_abs = df.copy()
+    df_abs["abs_amount"] = df_abs["amount"].abs()
+    grouped = df_abs.groupby("category")["abs_amount"].agg(["sum", "count"]).reset_index()
     grouped.columns = ["category", "total", "count"]
     total = grouped["total"].sum()
     grouped["share"] = grouped["total"] / total if total else 0.0
@@ -44,4 +45,6 @@ def top_merchants(df: pd.DataFrame, n: int = 10) -> pd.DataFrame:
 
 def daily_spend(df: pd.DataFrame) -> pd.Series:
     spending = df[df["spend"] > 0]
+    if spending.empty:
+        return pd.Series(dtype=float)
     return spending.groupby(spending["date"].dt.date)["spend"].sum()

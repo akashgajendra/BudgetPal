@@ -27,7 +27,8 @@ CREDIT_HINTS = (
 SKIP_HINTS = ("balance", "total", "subtotal", "beginning balance", "ending balance",
               "average ledger", "average balance", "interest paid", "overdraft protection",
               "continued on", "transaction history", "activity summary", "page ",
-              "internet payment - thank you", "payment thank you", "payment - thank you")
+              "internet payment - thank you", "payment thank you", "payment - thank you",
+              "e-payment", "epay", "credit crd epay", "mahadevaiah")
 DESC_NOISE_RE = re.compile(r"\s*-?\s*\d{4}\s+merch\s+id\s+\d+\s*", re.IGNORECASE)
 
 PII_PATTERNS = [

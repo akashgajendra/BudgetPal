@@ -11,6 +11,13 @@ income:
   - interest payment
   - tax refund
 
+rent:
+  - rent
+  - mortgage
+  - apartment
+  - property mgmt
+  - fernandes perozek
+
 transfer:
   - transfer
   - zelle
@@ -18,12 +25,6 @@ transfer:
   - paypal
   - cashapp
   - cash app
-
-housing:
-  - rent
-  - mortgage
-  - apartment
-  - property mgmt
 
 utilities:
   - electric
@@ -33,9 +34,6 @@ utilities:
   - internet
   - comcast
   - xfinity
-  - verizon
-  - t-mobile
-  - at&t
 
 subscriptions:
   - netflix
@@ -59,6 +57,9 @@ subscriptions:
   - linkedin
   - google cloud
   - google storage
+  - at&t
+  - verizon
+  - t-mobile
 
 insurance:
   - insurance
@@ -122,16 +123,21 @@ entertainment:
   - theater
   - ticketmaster
   - concert
+  - fitness
 
 travel:
   - airline
   - delta
   - united air
   - southwest
+  - southwes
   - hotel
   - airbnb
   - expedia
   - booking.com
+  - flixbus
+  - flix
+  - greyhound
 
 shopping:
   - amazon
@@ -155,7 +161,6 @@ personal_care:
 debt:
   - loan payment
   - credit crd
-  - e-payment
   - card payment
   - autopay
   - student loan

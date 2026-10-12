@@ -32,16 +32,21 @@ def _build_response(rows: list[dict], ollama_used: bool = False, ollama_warning:
 
     merchant_html = _table_html(merchants, {"merchant": "Merchant", "total": "Spent", "count": "Times"})
     txn_df = df[["date", "description", "category", "amount"]].copy()
-    txn_df["date"] = txn_df["date"].dt.strftime("%Y-%m-%d")
+    if not txn_df.empty:
+        txn_df["date"] = txn_df["date"].dt.strftime("%b %d")
 
+    has_source = any("source" in r for r in rows)
     display_rows = []
-    for _, row in txn_df.iterrows():
-        display_rows.append({
+    for i, (_, row) in enumerate(txn_df.iterrows()):
+        d = {
             "date": row["date"],
             "description": row["description"],
             "category": row["category"],
             "amount": _safe(float(row["amount"])),
-        })
+        }
+        if has_source and i < len(rows):
+            d["source"] = rows[i].get("source", "")
+        display_rows.append(d)
 
     return {
         "summary": {
@@ -49,6 +54,8 @@ def _build_response(rows: list[dict], ollama_used: bool = False, ollama_warning:
             "largest_purchase": _safe(s["largest_purchase"]),
             "transaction_count": s["transaction_count"],
             "average_transaction": _safe(s["average_transaction"]),
+            "start": s["start"].strftime("%b %d") if s.get("start") is not None else None,
+            "end": s["end"].strftime("%b %d") if s.get("end") is not None else None,
         },
         "charts": {"bar": bar_svg, "donut": donut_svg, "line": line_svg},
         "tables": {"merchants": merchant_html},
@@ -90,28 +97,57 @@ def index():
 
 @app.route("/upload", methods=["POST"])
 def upload():
-    file = request.files.get("file")
-    if not file or not file.filename.endswith(".pdf"):
-        return jsonify({"error": "Please upload a PDF file."}), 400
+    files = request.files.getlist("files")
+    if not files:
+        file = request.files.get("file")
+        if file:
+            files = [file]
+    files = [f for f in files if f.filename and f.filename.endswith(".pdf")]
+    if not files:
+        return jsonify({"error": "Please upload at least one PDF file."}), 400
 
-    pdf_bytes = file.read()
-    try:
-        transactions, line_count = parser.parse_statement(pdf_bytes)
-    except Exception:
-        return jsonify({"error": "Could not read this PDF. The file may be corrupted or password-protected."}), 400
+    all_rows = []
+    ollama_used = False
+    ollama_warning = None
+    errors = []
 
-    if not transactions:
-        return jsonify({"error": f"No transactions found ({line_count} text lines read). This format may not be supported yet."})
+    for file in files:
+        pdf_bytes = file.read()
+        source = file.filename.rsplit(".", 1)[0]
+        try:
+            transactions, line_count = parser.parse_statement(pdf_bytes)
+        except Exception:
+            errors.append(f"{file.filename}: could not read (corrupted or password-protected)")
+            continue
 
-    result = categorizer.categorize(transactions, use_ollama=True)
-    rows = result.rows
-    for r in rows:
-        if not isinstance(r["date"], str):
-            r["date"] = r["date"].strftime("%Y-%m-%d")
-    rows.sort(key=lambda r: r["date"])
-    _store["rows"] = rows
+        if not transactions:
+            errors.append(f"{file.filename}: no transactions found ({line_count} lines read)")
+            continue
 
-    return jsonify(_build_response(rows, result.ollama_used, result.ollama_warning))
+        result = categorizer.categorize(transactions, use_ollama=True)
+        for r in result.rows:
+            if not isinstance(r["date"], str):
+                r["date"] = r["date"].strftime("%Y-%m-%d")
+            r["source"] = source
+        all_rows.extend(result.rows)
+        if result.ollama_used:
+            ollama_used = True
+        if result.ollama_warning:
+            ollama_warning = result.ollama_warning
+
+    if not all_rows:
+        msg = "No transactions found in any file."
+        if errors:
+            msg += " " + "; ".join(errors)
+        return jsonify({"error": msg}), 400
+
+    all_rows.sort(key=lambda r: r["date"])
+    _store["rows"] = all_rows
+
+    resp = _build_response(all_rows, ollama_used, ollama_warning)
+    if errors:
+        resp["partial_errors"] = errors
+    return jsonify(resp)
 
 
 @app.route("/recalculate", methods=["POST"])

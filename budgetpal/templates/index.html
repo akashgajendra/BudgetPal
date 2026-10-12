@@ -39,9 +39,23 @@ body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,sans-serif;b
 .landing-error{display:none;margin-top:14px;background:var(--red-light);border:1px solid #f5b7b1;color:var(--red);border-radius:var(--radius);padding:10px 14px;font-size:13px;text-align:left}
 
 /* processing */
-.processing{display:none;text-align:center;padding:80px 0}
-.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .6s linear infinite;margin:0 auto 14px}
-@keyframes spin{to{transform:rotate(360deg)}}
+.processing{display:none;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+.tracker{background:var(--surface);border-radius:16px;box-shadow:var(--shadow-md);padding:40px 48px 36px;max-width:520px;width:100%}
+.tracker-title{text-align:center;font-size:18px;font-weight:700;color:var(--green);margin-bottom:28px}
+.tracker-rail{position:relative;display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px}
+.tracker-line{position:absolute;top:18px;left:36px;right:36px;height:4px;background:var(--border);border-radius:2px;z-index:0}
+.tracker-line-fill{position:absolute;top:0;left:0;height:100%;background:var(--green);border-radius:2px;transition:width .6s ease;width:0%}
+.tracker-node{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;width:72px}
+.tracker-dot{width:36px;height:36px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--text3);transition:all .3s ease;border:3px solid var(--surface)}
+.tracker-node.done .tracker-dot{background:var(--green);color:#fff;box-shadow:0 0 0 4px rgba(45,87,65,.15)}
+.tracker-node.active .tracker-dot{background:var(--gold);color:var(--green-dark);box-shadow:0 0 0 4px rgba(212,168,83,.2);animation:dotpulse 1.5s ease-in-out infinite}
+.tracker-label{margin-top:8px;font-size:11px;font-weight:600;color:var(--text3);text-align:center;white-space:nowrap}
+.tracker-node.done .tracker-label{color:var(--green)}
+.tracker-node.active .tracker-label{color:var(--gold-dark)}
+@keyframes dotpulse{0%,100%{box-shadow:0 0 0 4px rgba(212,168,83,.2)}50%{box-shadow:0 0 0 8px rgba(212,168,83,.1)}}
+.tracker-status{text-align:center;font-size:14px;font-weight:600;color:var(--text2)}
+.tracker-status span{display:inline-block;animation:statusfade 1.5s ease-in-out infinite}
+@keyframes statusfade{0%,100%{opacity:1}50%{opacity:.4}}
 
 /* dashboard */
 .dashboard{display:none;min-height:100vh}
@@ -112,10 +126,18 @@ td.amount{font-variant-numeric:tabular-nums;font-weight:600}
 
 /* txn table header */
 .txn-header{display:flex;align-items:center;justify-content:space-between;padding:0}
-.txn-count{font-size:11px;color:var(--text3);padding:10px 18px 0 0}
+.txn-right{display:flex;align-items:center;gap:10px;padding:10px 18px 0 0}
+.txn-count{font-size:11px;color:var(--text3)}
+.filter-select{border:1.5px solid var(--border2);border-radius:6px;padding:4px 10px;font-size:12px;background:var(--surface2);color:var(--green-dark);cursor:pointer;font-weight:600}
+.filter-select:focus{outline:2px solid var(--green);outline-offset:-1px}
+.search-input{border:1.5px solid var(--border2);border-radius:6px;padding:5px 10px 5px 28px;font-size:12px;background:var(--surface2);color:var(--text);width:180px;transition:border-color .15s}
+.search-input:focus{outline:none;border-color:var(--green);width:220px}
+.search-input::placeholder{color:var(--text3)}
+.search-wrap{position:relative;display:flex;align-items:center}
+.search-wrap svg{position:absolute;left:8px;width:14px;height:14px;color:var(--text3);pointer-events:none}
 
 @media(max-width:768px){
-  .kpis{grid-template-columns:repeat(2,1fr)}
+  .kpis{grid-template-columns:1fr!important}
   .grid-2,.grid-6-4{grid-template-columns:1fr}
 }
 @media(max-width:480px){
@@ -132,12 +154,12 @@ td.amount{font-variant-numeric:tabular-nums;font-weight:600}
     <div class="brand">BudgetPal</div>
     <p class="tagline">Upload a bank statement PDF for AI-powered spending analysis</p>
     <div class="upload-zone" id="dropzone">
-      <input type="file" accept=".pdf" id="fileInput">
+      <input type="file" accept=".pdf" id="fileInput" multiple>
       <div class="upload-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
       </div>
-      <div class="label">Drop your statement here</div>
-      <div class="sub">PDF files only</div>
+      <div class="label">Drop your statements here</div>
+      <div class="sub">One or more PDF files</div>
     </div>
     <div class="landing-error" id="landingError"></div>
     <div class="privacy-note">
@@ -149,8 +171,29 @@ td.amount{font-variant-numeric:tabular-nums;font-weight:600}
 
 <!-- PROCESSING -->
 <div class="processing" id="processing">
-  <div class="spinner"></div>
-  <div style="font-size:13px;color:var(--text2)">Analyzing statement&hellip;</div>
+  <div class="tracker">
+    <div class="tracker-title">Review In Progress</div>
+    <div class="tracker-rail">
+      <div class="tracker-line"><div class="tracker-line-fill" id="lineFill"></div></div>
+      <div class="tracker-node" id="node1">
+        <div class="tracker-dot">1</div>
+        <div class="tracker-label">Extract</div>
+      </div>
+      <div class="tracker-node" id="node2">
+        <div class="tracker-dot">2</div>
+        <div class="tracker-label">Categorize</div>
+      </div>
+      <div class="tracker-node" id="node3">
+        <div class="tracker-dot">3</div>
+        <div class="tracker-label">Analyze</div>
+      </div>
+      <div class="tracker-node" id="node4">
+        <div class="tracker-dot">4</div>
+        <div class="tracker-label">Complete</div>
+      </div>
+    </div>
+    <div class="tracker-status" id="trackerStatus"><span>Extracting transactions&hellip;</span></div>
+  </div>
 </div>
 
 <!-- DASHBOARD -->
@@ -169,35 +212,25 @@ td.amount{font-variant-numeric:tabular-nums;font-weight:600}
       <div class="alert ok" id="successMsg" style="display:none"></div>
     </div>
 
-    <div class="kpis">
+    <div class="kpis" style="grid-template-columns:repeat(3,1fr)">
       <div class="kpi">
         <div class="kpi-top">
-          <div class="kpi-label">Total Spent</div>
-          <div class="kpi-icon green">&#x1f4b3;</div>
+          <div class="kpi-label">Review Period</div>
         </div>
-        <div class="kpi-value" id="totalSpent"></div>
-        <div class="kpi-sub">Currency: USD</div>
+        <div class="kpi-value" id="kpiDateRange" style="font-size:18px"></div>
       </div>
       <div class="kpi">
         <div class="kpi-top">
-          <div class="kpi-label">Largest Purchase</div>
-          <div class="kpi-icon green">&#x1f4b0;</div>
+          <div class="kpi-label">Total Spent</div>
         </div>
-        <div class="kpi-value" id="largestPurchase"></div>
+        <div class="kpi-value" id="totalSpent"></div>
       </div>
       <div class="kpi">
         <div class="kpi-top">
           <div class="kpi-label">Transactions</div>
-          <div class="kpi-icon green">&#x1f4ca;</div>
         </div>
         <div class="kpi-value" id="txnCount"></div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-top">
-          <div class="kpi-label">Avg Purchase</div>
-          <div class="kpi-icon green">&#x1f4c8;</div>
-        </div>
-        <div class="kpi-value" id="avgPurchase"></div>
+        <div class="kpi-sub" id="avgLabel"></div>
       </div>
     </div>
 
@@ -226,7 +259,14 @@ td.amount{font-variant-numeric:tabular-nums;font-weight:600}
     <div class="card">
       <div class="txn-header">
         <span class="card-badge"><span class="card-badge-icon">&#x1f4cb;</span> Transactions</span>
-        <span class="txn-count" id="txnSubtitle"></span>
+        <div class="txn-right">
+          <div class="search-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" class="search-input" id="txnSearch" placeholder="Search transactions">
+          </div>
+          <select class="filter-select" id="catFilter"><option value="">All categories</option></select>
+          <span class="txn-count" id="txnSubtitle"></span>
+        </div>
       </div>
       <div class="scroll-y" style="max-height:480px" id="allTxnWrap"></div>
     </div>
@@ -241,28 +281,70 @@ function esc(s){const d=document.createElement('div');d.textContent=s;return d.i
 const MERCHANT_COLORS=['#2d5741','#d4a853','#1a7a8a','#b84233','#6b4c8a','#c06030','#2a6b8a','#8a6b2a'];
 let currentFilename = '';
 let currentCategories = [];
+let currentRows = [];
+let progressTimer = null;
+
+function setTracker(activeNode,fillPct,text){
+  for(let i=1;i<=4;i++){
+    const node=$('#node'+i);
+    node.className='tracker-node';
+    if(i<activeNode)node.classList.add('done');
+    else if(i===activeNode)node.classList.add('active');
+  }
+  $('#lineFill').style.width=fillPct+'%';
+  $('#trackerStatus').innerHTML='<span>'+text+'</span>';
+}
+
+function startProgress(){
+  const steps=[
+    {node:1,pct:5,text:'Extracting transactions…'},
+    {node:1,pct:18,text:'Parsing line items…'},
+    {node:2,pct:33,text:'Applying category rules…'},
+    {node:2,pct:50,text:'Running AI classification…'},
+    {node:3,pct:66,text:'Computing summaries…'},
+    {node:3,pct:80,text:'Generating charts…'},
+  ];
+  let i=0;
+  setTracker(1,0,'Extracting transactions…');
+  progressTimer=setInterval(()=>{
+    if(i>=steps.length){clearInterval(progressTimer);return}
+    const s=steps[i];
+    setTracker(s.node,s.pct,s.text);
+    i++;
+  },1400);
+}
+
+function stopProgress(){
+  if(progressTimer){clearInterval(progressTimer);progressTimer=null}
+  setTracker(4,100,'Analysis complete');
+}
 const dropzone = $('#dropzone'), fileInput = $('#fileInput');
 
 ['dragenter','dragover'].forEach(e=>dropzone.addEventListener(e,ev=>{ev.preventDefault();dropzone.classList.add('dragover')}));
 ['dragleave','drop'].forEach(e=>dropzone.addEventListener(e,ev=>{ev.preventDefault();dropzone.classList.remove('dragover')}));
-dropzone.addEventListener('drop',ev=>{if(ev.dataTransfer.files.length)upload(ev.dataTransfer.files[0])});
-fileInput.addEventListener('change',()=>{if(fileInput.files.length)upload(fileInput.files[0])});
+dropzone.addEventListener('drop',ev=>{if(ev.dataTransfer.files.length)upload(ev.dataTransfer.files)});
+fileInput.addEventListener('change',()=>{if(fileInput.files.length)upload(fileInput.files)});
 
-function upload(file){
-  if(!file.name.endsWith('.pdf')){showLandingError('Please upload a PDF file.');return}
-  currentFilename=file.name;
+function upload(files){
+  const pdfs=[...files].filter(f=>f.name.endsWith('.pdf'));
+  if(!pdfs.length){showLandingError('Please upload PDF files.');return}
+  currentFilename=pdfs.map(f=>f.name).join(', ');
   $('#landing').style.display='none';
-  $('#processing').style.display='block';
+  $('#processing').style.display='flex';
+  startProgress();
   const form=new FormData();
-  form.append('file',file);
+  pdfs.forEach(f=>form.append('files',f));
   fetch('/upload',{method:'POST',body:form})
-    .then(r=>{if(!r.ok)return r.json().catch(()=>({error:'Failed to process statement.'}));return r.json()})
+    .then(r=>{if(!r.ok)return r.json().catch(()=>({error:'Failed to process statements.'}));return r.json()})
     .then(data=>{
-      $('#processing').style.display='none';
-      if(data.error){showLandingError(data.error);$('#landing').style.display='flex';return}
-      render(data);
+      stopProgress();
+      setTimeout(()=>{
+        $('#processing').style.display='none';
+        if(data.error){showLandingError(data.error);$('#landing').style.display='flex';return}
+        render(data);
+      },400);
     })
-    .catch(()=>{$('#processing').style.display='none';showLandingError('Failed to process statement.');$('#landing').style.display='flex'});
+    .catch(()=>{stopProgress();$('#processing').style.display='none';showLandingError('Failed to process statements.');$('#landing').style.display='flex'});
 }
 
 function showLandingError(msg){const el=$('#landingError');el.textContent=msg;el.style.display='block'}
@@ -274,6 +356,11 @@ function render(data){
     el.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'+esc(data.ollama_warning);
     el.style.display='flex';
   } else { $('#warning').style.display='none' }
+  if(data.partial_errors&&data.partial_errors.length){
+    const el=$('#warning');
+    el.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'+esc(data.partial_errors.join('; '));
+    el.style.display='flex';
+  }
   if(data.ollama_used&&!data.ollama_warning){
     const el=$('#successMsg');
     el.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>AI categorization applied';
@@ -281,17 +368,23 @@ function render(data){
   }
   $('#navFilename').textContent=currentFilename;
   const s=data.summary;
+  if(s.start&&s.end)$('#kpiDateRange').textContent=s.start+' – '+s.end;
+  else $('#kpiDateRange').textContent='—';
   $('#totalSpent').textContent=money(s.total_spent);
-  $('#largestPurchase').textContent=money(s.largest_purchase);
   $('#txnCount').textContent=s.transaction_count;
-  $('#avgPurchase').textContent=money(s.average_transaction);
+  $('#avgLabel').textContent='Avg '+money(s.average_transaction);
   $('#barChart').innerHTML=data.charts.bar;
   $('#donutChart').innerHTML=data.charts.donut;
   $('#lineChart').innerHTML=data.charts.line;
   buildMerchantList(data.tables.merchants);
   currentCategories=data.categories||[];
-  buildTxnTable(data.rows);
-  $('#txnSubtitle').textContent=data.rows.length+' items';
+  currentRows=data.rows;
+  const filter=$('#catFilter');
+  const prev=filter.value;
+  filter.innerHTML='<option value="">All categories</option>';
+  const cats=[...new Set(data.rows.map(r=>r.category))].sort();
+  cats.forEach(c=>{filter.innerHTML+=`<option${c===prev?' selected':''}>${esc(c)}</option>`});
+  applyFilter();
   $('#dashboard').style.display='block';
 }
 
@@ -326,18 +419,36 @@ function buildMerchantList(html){
 function buildTxnTable(rows){
   const wrap=$('#allTxnWrap');
   const opts=c=>currentCategories.map(cat=>`<option${cat===c?' selected':''}>${esc(cat)}</option>`).join('');
-  let h='<table><thead><tr><th>Date</th><th>Description</th><th>Category</th><th style="text-align:right">Amount</th><th style="width:32px"></th></tr></thead><tbody>';
-  rows.forEach((r,i)=>{
+  const multiSource=rows.some(r=>r.source);
+  let h='<table><thead><tr><th>Date</th><th>Description</th>';
+  if(multiSource)h+='<th>Source</th>';
+  h+='<th>Category</th><th style="text-align:right">Amount</th><th style="width:32px"></th></tr></thead><tbody>';
+  rows.forEach((r)=>{
+    const idx=r._idx!=null?r._idx:rows.indexOf(r);
     h+=`<tr>
       <td style="white-space:nowrap">${r.date}</td>
-      <td>${esc(r.description)}</td>
-      <td><select class="cat-select" data-idx="${i}">${opts(r.category)}</select></td>
+      <td>${esc(r.description)}</td>`;
+    if(multiSource)h+=`<td><span style="font-size:11px;padding:2px 8px;border-radius:4px;background:var(--surface2);border:1px solid var(--border);color:var(--text2);white-space:nowrap">${esc(r.source||'')}</span></td>`;
+    h+=`<td><select class="cat-select" data-idx="${idx}">${opts(r.category)}</select></td>
       <td class="amount" style="text-align:right;color:${r.amount<0?'var(--red)':'var(--green)'}">${money(r.amount)}</td>
-      <td><button class="rm" data-idx="${i}" title="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></td>
+      <td><button class="rm" data-idx="${idx}" title="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></td>
     </tr>`;
   });
   h+='</tbody></table>';
   wrap.innerHTML=h;
+}
+
+function applyFilter(){
+  const cat=$('#catFilter').value;
+  const q=($('#txnSearch').value||'').toLowerCase();
+  let filtered=currentRows.map((r,i)=>({...r,_idx:i}));
+  if(cat)filtered=filtered.filter(r=>r.category===cat);
+  if(q)filtered=filtered.filter(r=>r.description.toLowerCase().includes(q)||r.date.toLowerCase().includes(q)||(r.source||'').toLowerCase().includes(q));
+  buildTxnTable(filtered);
+  const parts=[];
+  if(q)parts.push('"'+q+'"');
+  if(cat)parts.push(cat);
+  $('#txnSubtitle').textContent=filtered.length+(parts.length?' in '+parts.join(', '):' items');
 }
 
 function apiCall(url,body){
@@ -355,6 +466,9 @@ document.addEventListener('click',ev=>{
   btn.closest('tr').style.opacity='0.3';
   apiCall('/remove',{index:parseInt(btn.dataset.idx)}).then(render).catch(e=>alert('Remove failed: '+e));
 });
+
+$('#catFilter').addEventListener('change',applyFilter);
+$('#txnSearch').addEventListener('input',applyFilter);
 
 document.addEventListener('change',ev=>{
   const sel=ev.target.closest('.cat-select');
