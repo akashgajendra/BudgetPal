@@ -37,6 +37,29 @@ utilities:
   - t-mobile
   - at&t
 
+subscriptions:
+  - netflix
+  - spotify
+  - hulu
+  - disney+
+  - apple.com/bill
+  - apple inc
+  - icloud
+  - youtube premium
+  - adobe
+  - dropbox
+  - openai
+  - chatgpt
+  - anthropic
+  - claude
+  - gym
+  - uber membership
+  - membership
+  - recurring
+  - linkedin
+  - google cloud
+  - google storage
+
 insurance:
   - insurance
   - geico
@@ -76,6 +99,7 @@ dining:
   - cafe
   - coffee
   - pizza
+  - ezcater
 
 transportation:
   - uber
@@ -89,22 +113,6 @@ transportation:
   - metro
   - transit
   - toll
-
-subscriptions:
-  - netflix
-  - spotify
-  - hulu
-  - disney+
-  - apple.com/bill
-  - icloud
-  - youtube premium
-  - adobe
-  - dropbox
-  - openai
-  - chatgpt
-  - gym
-  - membership
-  - recurring
 
 entertainment:
   - steam

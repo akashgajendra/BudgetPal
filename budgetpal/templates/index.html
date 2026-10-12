@@ -7,68 +7,76 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#f8fafc;--surface:#ffffff;--text:#0f172a;--text2:#64748b;--text3:#94a3b8;
-  --border:#e2e8f0;--border2:#cbd5e1;
-  --accent:#4f46e5;--accent-hover:#4338ca;--accent-light:#eef2ff;--accent-subtle:#e0e7ff;
-  --red:#dc2626;--red-light:#fef2f2;
-  --amber-bg:#fffbeb;--amber-border:#fcd34d;--amber-text:#92400e;
-  --green-bg:#f0fdf4;--green-border:#86efac;--green-text:#166534;
-  --radius:8px;
-  --shadow:0 1px 2px rgba(0,0,0,.05);
-  --shadow-md:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.04);
+  --bg:#f5e6c8;--bg2:#fae8d0;--surface:#fff8ef;--surface2:#fff3e3;
+  --green:#2d5741;--green-dark:#1e3d2e;--green-light:#3a6b52;
+  --gold:#d4a853;--gold-light:#e8c87a;--gold-dark:#b8903e;
+  --text:#1a1a1a;--text2:#6b5c4d;--text3:#9a8b7a;
+  --border:#e0d0b8;--border2:#d4c4aa;
+  --red:#b84233;--red-light:#fde8e5;
+  --amber-bg:#fff5e0;--amber-border:#e8b84d;--amber-text:#7a5f1a;
+  --green-alert-bg:#e8f5e9;--green-alert-border:#81c784;--green-alert-text:#2e7d32;
+  --radius:10px;
+  --shadow:0 2px 8px rgba(45,87,65,.08);
+  --shadow-md:0 4px 16px rgba(45,87,65,.12);
 }
-body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased;font-size:14px}
+body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased;font-size:14px}
 
 /* landing */
-.landing{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
-.landing-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow-md);padding:48px 40px;max-width:460px;width:100%;text-align:center}
-.landing-card .brand{font-size:20px;font-weight:700;margin-bottom:4px;letter-spacing:-.3px}
-.landing-card .brand span{color:var(--accent)}
+.landing{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;background:linear-gradient(135deg,#2d5741 0%,#1e3d2e 100%)}
+.landing-card{background:var(--surface);border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.2);padding:48px 40px;max-width:460px;width:100%;text-align:center}
+.landing-card .brand{font-size:24px;font-weight:800;margin-bottom:4px;letter-spacing:-.3px;color:var(--green)}
+.landing-card .brand-icon{font-size:32px;margin-bottom:8px}
 .landing-card .tagline{color:var(--text2);font-size:13px;margin-bottom:28px}
-.upload-zone{border:1.5px dashed var(--border2);border-radius:10px;padding:40px 20px;cursor:pointer;transition:all .2s;position:relative;background:var(--bg)}
-.upload-zone:hover,.upload-zone.dragover{border-color:var(--accent);background:var(--accent-light)}
+.upload-zone{border:2px dashed var(--border2);border-radius:12px;padding:44px 20px;cursor:pointer;transition:all .2s;position:relative;background:var(--bg2)}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--green);background:var(--surface2)}
 .upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer}
-.upload-icon{width:44px;height:44px;background:var(--accent-light);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
-.upload-icon svg{width:22px;height:22px;color:var(--accent)}
-.upload-zone .label{font-size:14px;font-weight:600;color:var(--text)}
+.upload-icon{width:56px;height:56px;background:var(--green);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+.upload-icon svg{width:26px;height:26px;color:white}
+.upload-zone .label{font-size:15px;font-weight:700;color:var(--green)}
 .upload-zone .sub{font-size:12px;color:var(--text3);margin-top:4px}
-.privacy-note{display:flex;align-items:center;gap:5px;justify-content:center;margin-top:16px;font-size:11px;color:var(--text3)}
-.privacy-note svg{width:12px;height:12px}
-.landing-error{display:none;margin-top:14px;background:var(--red-light);border:1px solid #fecaca;color:var(--red);border-radius:var(--radius);padding:10px 14px;font-size:13px;text-align:left}
+.privacy-note{display:flex;align-items:center;gap:6px;justify-content:center;margin-top:18px;font-size:11px;color:var(--text3)}
+.privacy-note svg{width:13px;height:13px;color:var(--green)}
+.landing-error{display:none;margin-top:14px;background:var(--red-light);border:1px solid #f5b7b1;color:var(--red);border-radius:var(--radius);padding:10px 14px;font-size:13px;text-align:left}
 
 /* processing */
 .processing{display:none;text-align:center;padding:80px 0}
-.spinner{width:28px;height:28px;border:2.5px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;margin:0 auto 12px}
+.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .6s linear infinite;margin:0 auto 14px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* dashboard */
 .dashboard{display:none;min-height:100vh}
-.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:48px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:20}
-.topbar .brand{font-size:15px;font-weight:700;letter-spacing:-.2px}
-.topbar .brand span{color:var(--accent)}
-.topbar .meta{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--text2)}
-.topbar .btn-sm{font-size:12px;padding:5px 14px;border-radius:6px;background:var(--accent);color:#fff;border:none;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block}
-.topbar .btn-sm:hover{background:var(--accent-hover)}
+.topbar{background:var(--green);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:20;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.topbar .brand{font-size:16px;font-weight:800;letter-spacing:-.2px;color:#fff;display:flex;align-items:center;gap:8px}
+.topbar .brand-icon{font-size:20px}
+.topbar .meta{display:flex;align-items:center;gap:12px;font-size:12px;color:rgba(255,255,255,.7)}
+.topbar .btn-sm{font-size:12px;padding:6px 16px;border-radius:8px;background:var(--gold);color:var(--green-dark);border:none;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block;transition:all .15s}
+.topbar .btn-sm:hover{background:var(--gold-light)}
 .main{max-width:1120px;margin:0 auto;padding:24px 24px 80px}
 
 /* alerts */
 .alert{border-radius:var(--radius);padding:10px 14px;font-size:13px;margin-bottom:16px;display:flex;align-items:center;gap:8px}
 .alert.warn{background:var(--amber-bg);border:1px solid var(--amber-border);color:var(--amber-text)}
-.alert.ok{background:var(--green-bg);border:1px solid var(--green-border);color:var(--green-text)}
+.alert.ok{background:var(--green-alert-bg);border:1px solid var(--green-alert-border);color:var(--green-alert-text)}
 .alert svg{width:15px;height:15px;flex-shrink:0}
 .alert-wrap{display:none}
 
 /* kpis */
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
-.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
-.kpi-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.6px;color:var(--text2)}
-.kpi-value{font-size:22px;font-weight:700;margin-top:4px;letter-spacing:-.3px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.kpi{background:var(--green);border-radius:12px;padding:18px 20px;box-shadow:var(--shadow-md);color:#fff;position:relative;overflow:hidden}
+.kpi::after{content:'';position:absolute;top:-20px;right:-20px;width:80px;height:80px;background:rgba(255,255,255,.04);border-radius:50%}
+.kpi-top{display:flex;align-items:center;justify-content:space-between}
+.kpi-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:rgba(255,255,255,.7)}
+.kpi-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.kpi-icon.green{background:rgba(255,255,255,.12)}
+.kpi-value{font-size:24px;font-weight:800;margin-top:6px;letter-spacing:-.3px}
+.kpi-sub{font-size:10px;color:rgba(255,255,255,.5);margin-top:2px}
 
 /* cards */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
-.card-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.card-title{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text2)}
-.card-body{padding:16px 18px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);overflow:hidden}
+.card-header{padding:0;display:flex;align-items:center;justify-content:space-between}
+.card-badge{background:var(--green);color:#fff;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:10px 18px;border-radius:12px 0 12px 0;display:inline-flex;align-items:center;gap:6px}
+.card-badge-icon{font-size:14px}
+.card-body{padding:18px 20px}
 .card-body svg{display:block;max-width:100%}
 
 /* grid */
@@ -77,27 +85,34 @@ body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-s
 
 /* tables */
 table{width:100%;border-collapse:collapse;font-size:13px}
-th{text-align:left;padding:8px 14px;font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--text3);background:var(--bg);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:1}
+th{text-align:left;padding:8px 14px;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--text3);background:var(--surface2);border-bottom:1px solid var(--border)}
 td{padding:8px 14px;border-bottom:1px solid var(--border);color:var(--text)}
-tr:hover td{background:#f8fafc}
-td.amount{font-variant-numeric:tabular-nums;font-weight:500}
-td.cat-badge span{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500;background:var(--bg);border:1px solid var(--border);color:var(--text2)}
+tr:hover td{background:var(--bg2)}
+td.amount{font-variant-numeric:tabular-nums;font-weight:600}
+
+/* merchant list */
+.merchant-list{list-style:none;padding:0;margin:0}
+.merchant-item{display:flex;align-items:center;gap:12px;padding:10px 18px;border-bottom:1px solid var(--border)}
+.merchant-item:last-child{border-bottom:none}
+.merchant-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;flex-shrink:0}
+.merchant-info{flex:1;min-width:0}
+.merchant-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.merchant-detail{font-size:11px;color:var(--text3)}
 
 /* inline edit */
-.cat-select{border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:12px;background:var(--surface);color:var(--text);cursor:pointer}
-.cat-select:focus{outline:2px solid var(--accent);outline-offset:-1px}
+.cat-select{border:1.5px solid var(--border2);border-radius:6px;padding:4px 8px;font-size:12px;background:var(--surface2);color:var(--green-dark);cursor:pointer;font-weight:600}
+.cat-select:focus{outline:2px solid var(--green);outline-offset:-1px}
 
 /* remove */
-.rm{background:none;border:none;color:var(--text3);cursor:pointer;padding:4px;border-radius:4px;line-height:1;font-size:14px;display:flex;align-items:center;justify-content:center;width:24px;height:24px}
+.rm{background:none;border:none;color:var(--text3);cursor:pointer;padding:4px;border-radius:6px;line-height:1;font-size:14px;display:flex;align-items:center;justify-content:center;width:26px;height:26px;transition:all .15s}
 .rm:hover{background:var(--red-light);color:var(--red)}
 .rm svg{width:14px;height:14px}
 
-/* action row */
-.actions{display:flex;align-items:center;gap:8px;margin-bottom:16px}
-.btn-outline{font-size:12px;font-weight:600;padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;transition:all .15s}
-.btn-outline:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
-
 .scroll-y{overflow-y:auto}
+
+/* txn table header */
+.txn-header{display:flex;align-items:center;justify-content:space-between;padding:0}
+.txn-count{font-size:11px;color:var(--text3);padding:10px 18px 0 0}
 
 @media(max-width:768px){
   .kpis{grid-template-columns:repeat(2,1fr)}
@@ -113,7 +128,8 @@ td.cat-badge span{display:inline-block;padding:2px 8px;border-radius:4px;font-si
 <!-- LANDING -->
 <div class="landing" id="landing">
   <div class="landing-card">
-    <div class="brand">Budget<span>Pal</span></div>
+    <div class="brand-icon">&#x1f4b0;</div>
+    <div class="brand">BudgetPal</div>
     <p class="tagline">Upload a bank statement PDF for AI-powered spending analysis</p>
     <div class="upload-zone" id="dropzone">
       <input type="file" accept=".pdf" id="fileInput">
@@ -140,10 +156,10 @@ td.cat-badge span{display:inline-block;padding:2px 8px;border-radius:4px;font-si
 <!-- DASHBOARD -->
 <div class="dashboard" id="dashboard">
   <div class="topbar">
-    <div class="brand">Budget<span>Pal</span></div>
+    <div class="brand"><span class="brand-icon">&#x1f4b0;</span> BudgetPal</div>
     <div class="meta">
       <span id="navFilename"></span>
-      <a class="btn-sm" id="downloadBtn" href="/download" download="budgetpal-report.html">Export</a>
+      <a class="btn-sm" id="downloadBtn" href="/download" download="budgetpal-report.html">&#x2B07; Export</a>
     </div>
   </div>
 
@@ -154,38 +170,63 @@ td.cat-badge span{display:inline-block;padding:2px 8px;border-radius:4px;font-si
     </div>
 
     <div class="kpis">
-      <div class="kpi"><div class="kpi-label">Total Spent</div><div class="kpi-value" id="totalSpent"></div></div>
-      <div class="kpi"><div class="kpi-label">Largest Purchase</div><div class="kpi-value" id="largestPurchase"></div></div>
-      <div class="kpi"><div class="kpi-label">Transactions</div><div class="kpi-value" id="txnCount"></div></div>
-      <div class="kpi"><div class="kpi-label">Avg Purchase</div><div class="kpi-value" id="avgPurchase"></div></div>
+      <div class="kpi">
+        <div class="kpi-top">
+          <div class="kpi-label">Total Spent</div>
+          <div class="kpi-icon green">&#x1f4b3;</div>
+        </div>
+        <div class="kpi-value" id="totalSpent"></div>
+        <div class="kpi-sub">Currency: USD</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-top">
+          <div class="kpi-label">Largest Purchase</div>
+          <div class="kpi-icon green">&#x1f4b0;</div>
+        </div>
+        <div class="kpi-value" id="largestPurchase"></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-top">
+          <div class="kpi-label">Transactions</div>
+          <div class="kpi-icon green">&#x1f4ca;</div>
+        </div>
+        <div class="kpi-value" id="txnCount"></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-top">
+          <div class="kpi-label">Avg Purchase</div>
+          <div class="kpi-icon green">&#x1f4c8;</div>
+        </div>
+        <div class="kpi-value" id="avgPurchase"></div>
+      </div>
     </div>
 
     <div class="grid-6-4">
       <div class="card">
-        <div class="card-header"><span class="card-title">Spending by Category</span></div>
+        <div class="card-header"><span class="card-badge"><span class="card-badge-icon">&#x1f4ca;</span> Spending by Category</span></div>
         <div class="card-body" id="barChart"></div>
       </div>
       <div class="card">
-        <div class="card-header"><span class="card-title">Breakdown</span></div>
+        <div class="card-header"><span class="card-badge"><span class="card-badge-icon">&#x1f4cd;</span> Breakdown</span></div>
         <div class="card-body" id="donutChart" style="display:flex;justify-content:center"></div>
       </div>
     </div>
 
     <div class="grid-6-4">
       <div class="card">
-        <div class="card-header"><span class="card-title">Spending Over Time</span></div>
+        <div class="card-header"><span class="card-badge"><span class="card-badge-icon">&#x1f4c8;</span> Spending Over Time</span></div>
         <div class="card-body" id="lineChart"></div>
       </div>
       <div class="card">
-        <div class="card-header"><span class="card-title">Top Merchants</span></div>
-        <div class="scroll-y" id="merchantsWrap" style="max-height:240px"></div>
+        <div class="card-header"><span class="card-badge"><span class="card-badge-icon">&#x1f3c6;</span> Top Merchants</span></div>
+        <div class="scroll-y" id="merchantsWrap" style="max-height:260px"></div>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-header">
-        <span class="card-title">Transactions</span>
-        <span style="font-size:11px;color:var(--text3)" id="txnSubtitle"></span>
+      <div class="txn-header">
+        <span class="card-badge"><span class="card-badge-icon">&#x1f4cb;</span> Transactions</span>
+        <span class="txn-count" id="txnSubtitle"></span>
       </div>
       <div class="scroll-y" style="max-height:480px" id="allTxnWrap"></div>
     </div>
@@ -197,6 +238,7 @@ const $ = s => document.querySelector(s);
 const money = v => '$' + Math.abs(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
 
+const MERCHANT_COLORS=['#2d5741','#d4a853','#1a7a8a','#b84233','#6b4c8a','#c06030','#2a6b8a','#8a6b2a'];
 let currentFilename = '';
 let currentCategories = [];
 const dropzone = $('#dropzone'), fileInput = $('#fileInput');
@@ -246,11 +288,39 @@ function render(data){
   $('#barChart').innerHTML=data.charts.bar;
   $('#donutChart').innerHTML=data.charts.donut;
   $('#lineChart').innerHTML=data.charts.line;
-  $('#merchantsWrap').innerHTML=data.tables.merchants;
+  buildMerchantList(data.tables.merchants);
   currentCategories=data.categories||[];
   buildTxnTable(data.rows);
   $('#txnSubtitle').textContent=data.rows.length+' items';
   $('#dashboard').style.display='block';
+}
+
+function buildMerchantList(html){
+  const wrap=$('#merchantsWrap');
+  const temp=document.createElement('div');
+  temp.innerHTML=html;
+  const rows=temp.querySelectorAll('tbody tr');
+  if(!rows.length){wrap.innerHTML=html;return}
+  let list='<ul class="merchant-list">';
+  rows.forEach((row,i)=>{
+    const cells=row.querySelectorAll('td');
+    if(cells.length<3)return;
+    const name=cells[0].textContent.trim();
+    const spent=cells[1].textContent.trim();
+    const count=cells[2].textContent.trim();
+    const color=MERCHANT_COLORS[i%MERCHANT_COLORS.length];
+    const initial=name.charAt(0).toUpperCase();
+    list+=`<li class="merchant-item">
+      <div class="merchant-icon" style="background:${color}">${initial}</div>
+      <div class="merchant-info">
+        <div class="merchant-name">${esc(name)}</div>
+        <div class="merchant-detail">${count} transactions</div>
+      </div>
+      <div style="font-weight:700;font-size:13px;white-space:nowrap">${spent}</div>
+    </li>`;
+  });
+  list+='</ul>';
+  wrap.innerHTML=list;
 }
 
 function buildTxnTable(rows){
@@ -262,7 +332,7 @@ function buildTxnTable(rows){
       <td style="white-space:nowrap">${r.date}</td>
       <td>${esc(r.description)}</td>
       <td><select class="cat-select" data-idx="${i}">${opts(r.category)}</select></td>
-      <td class="amount" style="text-align:right">${money(r.amount)}</td>
+      <td class="amount" style="text-align:right;color:${r.amount<0?'var(--red)':'var(--green)'}">${money(r.amount)}</td>
       <td><button class="rm" data-idx="${i}" title="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></td>
     </tr>`;
   });

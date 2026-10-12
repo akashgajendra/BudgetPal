@@ -25,18 +25,19 @@ analyzer, report, svg_charts) are unchanged.
 ## Visual Design
 
 ### Color system
-Base: warm neutral, not pure white or pure black.
-- Background: #f7f7f5 (warm off-white)
-- Surface/cards: #ffffff
+Warm, rich dashboard style with dark green and gold accents.
+- Background: #f5e6c8 (warm cream/beige)
+- Surface/cards: #fff8ef (warm off-white)
+- KPI cards/headers: #2d5741 (dark forest green) with white text
 - Text primary: #1a1a1a
-- Text secondary: #6b7280
-- Border: #e5e5e3
-- Accent: #4f46e5 (indigo — used for CTAs, active states, primary chart color)
+- Text secondary: #6b5c4d
+- Border: #e0d0b8
+- Accent: #d4a853 (gold — used for CTAs, export button)
 
-Chart palette (must be distinguishable, accessible, print-friendly):
-- #4f46e5 (indigo), #f97316 (orange), #0ea5e9 (sky), #e11d48 (rose),
-  #eab308 (yellow), #8b5cf6 (violet), #14b8a6 (teal), #f43f5e (pink),
-  #059669 (green), #84cc16 (lime), #d946ef (fuchsia), #0891b2 (cyan)
+Chart palette (earth tones, warm, distinguishable):
+- #2d5741 (forest green), #d4a853 (gold), #1a7a8a (teal), #b84233 (brick),
+  #6b4c8a (plum), #c06030 (rust), #2a6b8a (steel blue), #8a6b2a (bronze),
+  #3a7a5a (sage), #cc8844 (amber), #5a3a7a (grape), #2a8a6b (jade)
 
 ### Typography
 System font stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif.

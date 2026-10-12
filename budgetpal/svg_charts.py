@@ -1,9 +1,9 @@
 import math
 
 PALETTE = [
-    "#4f46e5", "#f97316", "#0ea5e9", "#e11d48", "#eab308",
-    "#8b5cf6", "#14b8a6", "#f43f5e", "#059669", "#84cc16",
-    "#d946ef", "#0891b2",
+    "#2d5741", "#d4a853", "#1a7a8a", "#b84233", "#6b4c8a",
+    "#c06030", "#2a6b8a", "#8a6b2a", "#3a7a5a", "#cc8844",
+    "#5a3a7a", "#2a8a6b",
 ]
 
 
@@ -82,7 +82,7 @@ def pie_chart(
     if len(labels) == 1:
         parts.append(
             f'<circle cx="{cx}" cy="{cy}" r="{outer_r}" fill="{_color(0)}"/>'
-            f'<circle cx="{cx}" cy="{cy}" r="{inner_r}" fill="white"/>'
+            f'<circle cx="{cx}" cy="{cy}" r="{inner_r}" fill="#fff8ef"/>'
         )
     else:
         angle = -math.pi / 2
@@ -161,7 +161,7 @@ def line_chart(
 
     pts_line = " ".join(f"{px(i):.1f},{py(v):.1f}" for i, v in enumerate(values))
     pts_area = f"{px(0):.1f},{top + plot_h:.1f} {pts_line} {px(n - 1):.1f},{top + plot_h:.1f}"
-    parts.append(f'<polygon points="{pts_area}" fill="{PALETTE[0]}" opacity="0.12"/>')
+    parts.append(f'<polygon points="{pts_area}" fill="{PALETTE[0]}" opacity="0.18"/>')
     parts.append(f'<polyline points="{pts_line}" fill="none" stroke="{PALETTE[0]}" stroke-width="2.5"/>')
 
     for i, v in enumerate(values):
